@@ -98,10 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Each section slides in from right as you scroll
                 const translateX = (index * viewportWidth) - (scrollProgress * viewportWidth * (sections.length - 1));
                 
-                // Apply transforms separately to maintain backdrop-filter
-                section.style.left = `${translateX}px`;
-                section.style.top = '50%';
-                section.style.transform = 'translateY(-50%)';
+                // Use transform for better performance (GPU-accelerated)
+                section.style.transform = `translateX(${translateX}px) translateY(-50%)`;
                 
                 // Fade out sections that have scrolled past
                 const opacity = 1 - Math.abs(translateX / viewportWidth);
@@ -111,9 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             // Hide all sections when in hero area
             sections.forEach((section) => {
-                section.style.left = '100vw';
-                section.style.top = '50%';
-                section.style.transform = 'translateY(-50%)';
+                section.style.transform = 'translateX(100vw) translateY(-50%)';
                 section.style.opacity = '0';
                 section.style.pointerEvents = 'none';
             });

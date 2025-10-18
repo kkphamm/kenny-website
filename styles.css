@@ -302,6 +302,7 @@ section {
     padding: 0 5vw;
     opacity: 0;
     pointer-events: none;
+    transform: translateY(-50%);
     will-change: transform, opacity;
 }
 
@@ -327,6 +328,7 @@ section {
     font-size: 2.5rem;
     color: #111;
     font-weight: 700;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .content-card h3 {
@@ -335,6 +337,7 @@ section {
     font-size: 1.8rem;
     color: #222;
     font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .content-card p {
@@ -342,6 +345,7 @@ section {
     line-height: 1.6;
     color: #333;
     margin-bottom: 10px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .education-item, .experience-item {
@@ -383,6 +387,7 @@ section {
 .experience-detail li {
     margin-bottom: 8px;
     line-height: 1.5;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Projects Grid - 2x2 Layout */
@@ -421,6 +426,7 @@ section {
     font-size: 1.4rem;
     color: #111;
     font-weight: 700;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .tech-stack {
@@ -436,6 +442,7 @@ section {
     line-height: 1.5;
     color: #333;
     margin: 0;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Contact Section - Stacked Cards */
@@ -463,12 +470,14 @@ section {
     margin: 0 0 20px 0;
     font-size: 2rem;
     color: #111;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .contact-info p {
     margin: 15px 0;
     font-size: 1.1rem;
     color: #000;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .contact-info strong {
@@ -490,6 +499,7 @@ section {
     font-size: 1.5rem;
     color: #111;
     text-align: center;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .social-links {
@@ -520,6 +530,7 @@ section {
 .social-link span {
     font-weight: 600;
     font-size: 1.1rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 /* Responsive adjustments */
