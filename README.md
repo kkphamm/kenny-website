@@ -21,14 +21,13 @@ A modern, interactive portfolio website featuring glass morphism design and hori
 ## Project Structure
 
 ```
-Web/
-├── src/
-│   ├── index.html          # Main HTML structure
-│   ├── styles.css          # All styling and animations
-│   └── script.js           # Interactive functionality
+kenny-website/
+├── index.html              # Main HTML structure
+├── styles.css              # All styling and animations
+├── script.js               # Interactive functionality
 ├── images/
 │   ├── background1.jpeg    # Hero section background
-│   └── background2.jpg     # Content sections background
+│   └── background2.jpeg    # Content sections background
 └── README.md
 ```
 
@@ -41,7 +40,6 @@ Web/
    ```
 
 2. **Open the website**
-   - Navigate to the `src` folder
    - Open `index.html` in your web browser
    - Or use a local development server like Live Server
 
