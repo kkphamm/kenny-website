@@ -47,8 +47,19 @@
     }, nameAnimationEnd * 1000); // Convert to milliseconds
 })();
 
+// Prevent browser from restoring scroll position on refresh
+if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+}
+
+// Force scroll to top immediately
+window.scrollTo(0, 0);
+
 // --- Scrolling and Navigation Enhancement ---
 document.addEventListener('DOMContentLoaded', () => {
+    // Ensure we're at the top
+    window.scrollTo(0, 0);
+    
     const nav = document.getElementById('main-nav');
     const heroSection = document.getElementById('hero-section');
     const mainContent = document.getElementById('main-content');
@@ -59,7 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. Sticky Navigation Logic
     window.addEventListener('scroll', () => {
-        if (window.scrollY > heroSectionHeight - 80) {
+        // Nav becomes sticky at end of hero (buffer doesn't affect nav)
+        if (window.scrollY > heroSectionHeight) {
             nav.classList.add('fixed-nav');
         } else {
             nav.classList.remove('fixed-nav');
@@ -74,29 +86,33 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Calculate total scrollable area
         const maxScroll = mainContent.offsetHeight - window.innerHeight;
-        const totalScrollProgress = Math.min(Math.max((scrollY - heroSectionHeight) / maxScroll, 0), 1);
+        // Calculate progress from start of page (including hero)
+        const totalPageScroll = heroSectionHeight + maxScroll;
+        const totalScrollProgress = Math.min(Math.max(scrollY / totalPageScroll, 0), 1);
         
-        // Update custom scrollbar
-        if (scrollY > heroSectionHeight) {
-            customScrollbar.style.opacity = '1';
-            const thumbWidth = (1 / sections.length) * 100; // Width based on number of sections
-            customScrollbarThumb.style.width = `${thumbWidth}%`;
-            customScrollbarThumb.style.left = `${totalScrollProgress * (100 - thumbWidth)}%`;
-        } else {
-            customScrollbar.style.opacity = '0';
-        }
+        // Update custom scrollbar (vertical) - always visible
+        customScrollbar.style.opacity = '1';
+        const thumbHeight = (1 / sections.length) * 100; // Height based on number of sections
+        customScrollbarThumb.style.height = `${thumbHeight}%`;
+        customScrollbarThumb.style.top = `${totalScrollProgress * (100 - thumbHeight)}%`;
         
-        // Only apply horizontal scroll after hero section
-        if (scrollY > heroSectionHeight) {
-            // Calculate scroll progress (0 to 1)
-            const scrollProgress = Math.min(contentScroll / maxScroll, 1);
+        // Start showing content sections after full hero section + buffer
+        const scrollBuffer = 300; // Creates 300px of "dead space" scrolling
+        const heroTransitionStart = heroSectionHeight + scrollBuffer;
+        
+        if (scrollY > heroTransitionStart) {
+            // Calculate scroll progress (0 to 1) starting from end of hero + buffer
+            const adjustedScroll = scrollY - heroTransitionStart;
+            const adjustedMaxScroll = maxScroll - scrollBuffer;
+            const scrollProgress = Math.min(adjustedScroll / adjustedMaxScroll, 1);
             
             // Calculate how much to translate each section
             const viewportWidth = window.innerWidth;
             
             sections.forEach((section, index) => {
-                // Each section slides in from right as you scroll
-                const translateX = (index * viewportWidth) - (scrollProgress * viewportWidth * (sections.length - 1));
+                // All sections start off-screen to the right, then slide in one by one
+                const baseOffset = viewportWidth; // Start all sections one viewport to the right
+                const translateX = baseOffset + (index * viewportWidth) - (scrollProgress * viewportWidth * sections.length);
                 
                 // Use transform for better performance (GPU-accelerated)
                 section.style.transform = `translateX(${translateX}px) translateY(-50%)`;
@@ -144,20 +160,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isDragging) return;
         
         const scrollbarRect = customScrollbar.getBoundingClientRect();
-        const thumbWidth = customScrollbarThumb.offsetWidth;
+        const thumbHeight = customScrollbarThumb.offsetHeight;
         
-        // Calculate mouse position relative to scrollbar
-        let mouseX = e.clientX - scrollbarRect.left;
+        // Calculate mouse position relative to scrollbar (vertical)
+        let mouseY = e.clientY - scrollbarRect.top;
         
         // Constrain within scrollbar bounds
-        mouseX = Math.max(0, Math.min(mouseX, scrollbarRect.width - thumbWidth));
+        mouseY = Math.max(0, Math.min(mouseY, scrollbarRect.height - thumbHeight));
         
         // Calculate scroll progress (0 to 1)
-        const scrollProgress = mouseX / (scrollbarRect.width - thumbWidth);
+        const scrollProgress = mouseY / (scrollbarRect.height - thumbHeight);
         
-        // Calculate target scroll position
+        // Calculate target scroll position (from start of page)
         const maxScroll = mainContent.offsetHeight - window.innerHeight;
-        const targetScroll = heroSectionHeight + (scrollProgress * maxScroll);
+        const totalPageScroll = heroSectionHeight + maxScroll;
+        const targetScroll = scrollProgress * totalPageScroll;
         
         // Apply scroll
         window.scrollTo({
@@ -173,16 +190,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Click anywhere on scrollbar to jump
+    // Click anywhere on scrollbar to jump (vertical)
     customScrollbar.addEventListener('click', (e) => {
         if (e.target === customScrollbar) {
             const scrollbarRect = customScrollbar.getBoundingClientRect();
-            const thumbWidth = customScrollbarThumb.offsetWidth;
-            const clickX = e.clientX - scrollbarRect.left - (thumbWidth / 2);
+            const thumbHeight = customScrollbarThumb.offsetHeight;
+            const clickY = e.clientY - scrollbarRect.top - (thumbHeight / 2);
             
-            const scrollProgress = Math.max(0, Math.min(1, clickX / (scrollbarRect.width - thumbWidth)));
+            const scrollProgress = Math.max(0, Math.min(1, clickY / (scrollbarRect.height - thumbHeight)));
             const maxScroll = mainContent.offsetHeight - window.innerHeight;
-            const targetScroll = heroSectionHeight + (scrollProgress * maxScroll);
+            const totalPageScroll = heroSectionHeight + maxScroll;
+            const targetScroll = scrollProgress * totalPageScroll;
             
             window.scrollTo({
                 top: targetScroll,
@@ -202,17 +220,21 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Calculate the scroll position to center each section
             const totalContentScroll = mainContent.offsetHeight - window.innerHeight;
+            const scrollBuffer = 300; // Match the buffer from updateHorizontalScroll
+            const heroTransitionStart = heroSectionHeight + scrollBuffer;
             
             // Calculate scroll position based on section index
-            // For last section (Contact), ensure we can scroll all the way
+            // Match the exact formula used in horizontal scroll animation
+            const adjustedMaxScroll = totalContentScroll - scrollBuffer;
+            
             let targetScroll;
-            if (index === sections.length - 1) {
-                // For the last section, scroll to the very end
-                targetScroll = heroSectionHeight + totalContentScroll;
-            } else {
-                const sectionProgress = index / (sections.length - 1);
-                targetScroll = heroSectionHeight + (sectionProgress * totalContentScroll);
-            }
+            // Calculate the scrollProgress needed to center this section
+            // With the new offset formula: each section centers at (index + 1) / sections.length
+            const targetScrollProgress = (index + 1) / sections.length;
+            
+            // Convert scrollProgress to actual scroll position
+            // This matches: scrollProgress = (scrollY - heroTransitionStart) / adjustedMaxScroll
+            targetScroll = heroTransitionStart + (targetScrollProgress * adjustedMaxScroll);
             
             window.scrollTo({
                 top: targetScroll,

@@ -27,7 +27,8 @@ kenny-website/
 ├── script.js               # Interactive functionality
 ├── images/
 │   ├── background1.jpeg    # Hero section background
-│   └── background2.jpeg    # Content sections background
+│   ├── background2.jpeg    # Content sections background
+│   └── background3.jpg     # Additional background option
 └── README.md
 ```
 
