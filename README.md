@@ -32,18 +32,6 @@ kenny-website/
 └── README.md
 ```
 
-## Getting Started
-
-1. **Clone the repository**
-   ```bash
-   git clone git@github.com:kkphamm/kenny-website.git
-   cd kenny-website
-   ```
-
-2. **Open the website**
-   - Open `index.html` in your web browser
-   - Or use a local development server like Live Server
-
 ## Sections
 
 - **Hero**: Animated name display with glass letters
@@ -63,16 +51,6 @@ kenny-website/
 - **Sticky Navigation**: Nav bar becomes opaque and changes color on scroll
 - **Interactive Elements**: Draggable scrollbar, hover animations, and smooth transitions
 - **Parallax Background**: Fixed background creates depth while scrolling
-
-## Customization
-
-To customize for your own use:
-
-1. **Personal Info**: Update contact details in `index.html`
-2. **Projects**: Modify project cards with your own work
-3. **Images**: Replace background images in the `images/` folder
-4. **Colors**: Adjust RGBA values in `styles.css` for different glass opacity
-5. **Name**: Change `const myName = "Kenny"` in `script.js`
 
 ## Browser Compatibility
 
@@ -96,7 +74,7 @@ Note: Backdrop filters require modern browsers for full glass effect.
 - [LinkedIn](https://www.linkedin.com/in/kenny-pham-a49723245/)
 - [GitHub](https://github.com/kkphamm)
 
-## 📄 License
+## License
 
 This project is open source and available for personal and educational use.
 

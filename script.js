@@ -4,7 +4,7 @@
     const nameContainer = document.getElementById('name-display');
     
     // Define the target name
-    const myName = "Kenny";
+    const myName = "Kenny     Pham";
     
     // Create and append span elements for each character
     for (let i = 0; i < myName.length; i++) {
