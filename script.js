@@ -213,34 +213,181 @@ document.addEventListener('DOMContentLoaded', () => {
     customScrollbarThumb.style.cursor = 'grab';
 
     // 3. Smooth Scrolling Logic for Navigation
-    const navLinks = document.querySelectorAll('#main-nav a');
-    navLinks.forEach((link, index) => {
+    const allNavLinks = document.querySelectorAll('#main-nav a');
+    allNavLinks.forEach((link, index) => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // Calculate the scroll position to center each section
-            const totalContentScroll = mainContent.offsetHeight - window.innerHeight;
-            const scrollBuffer = 300; // Match the buffer from updateHorizontalScroll
-            const heroTransitionStart = heroSectionHeight + scrollBuffer;
+            const isMobileView = window.innerWidth <= 768;
             
-            // Calculate scroll position based on section index
-            // Match the exact formula used in horizontal scroll animation
-            const adjustedMaxScroll = totalContentScroll - scrollBuffer;
-            
-            let targetScroll;
-            // Calculate the scrollProgress needed to center this section
-            // With the new offset formula: each section centers at (index + 1) / sections.length
-            const targetScrollProgress = (index + 1) / sections.length;
-            
-            // Convert scrollProgress to actual scroll position
-            // This matches: scrollProgress = (scrollY - heroTransitionStart) / adjustedMaxScroll
-            targetScroll = heroTransitionStart + (targetScrollProgress * adjustedMaxScroll);
-            
-            window.scrollTo({
-                top: targetScroll,
-                behavior: 'smooth'
+            if (isMobileView) {
+                // Mobile: Simple scroll to section
+                const targetId = link.getAttribute('href').substring(1);
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            } else {
+                // Desktop: Horizontal scroll calculation
+                const totalContentScroll = mainContent.offsetHeight - window.innerHeight;
+                const scrollBuffer = 300;
+                const heroTransitionStart = heroSectionHeight + scrollBuffer;
+                const adjustedMaxScroll = totalContentScroll - scrollBuffer;
+                
+                let targetScroll;
+                const targetScrollProgress = (index + 1) / sections.length;
+                targetScroll = heroTransitionStart + (targetScrollProgress * adjustedMaxScroll);
+                
+                window.scrollTo({
+                    top: targetScroll,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // Mobile menu toggle functionality
+    const hamburger = document.getElementById('mobile-menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+
+    if (hamburger && navLinks) {
+        hamburger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+
+        // Close menu when clicking a link
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navLinks.classList.remove('active');
             });
         });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!nav.contains(e.target)) {
+                hamburger.classList.remove('active');
+                navLinks.classList.remove('active');
+            }
+        });
+    }
+
+    // Mobile-specific optimizations
+    const isMobile = window.innerWidth <= 768;
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    if (isMobile) {
+        // Disable horizontal scrolling on mobile - sections stack vertically
+        sections.forEach((section) => {
+            section.style.position = 'relative';
+            section.style.transform = 'none';
+            section.style.opacity = '1';
+            section.style.pointerEvents = 'auto';
+        });
+
+        // Override the horizontal scroll function for mobile
+        function updateHorizontalScroll() {
+            // Do nothing on mobile - sections are stacked
+        }
+    } else if (isMobile || isTouchDevice) {
+        // Disable custom scrollbar on mobile (already hidden in CSS)
+        if (customScrollbar) {
+            customScrollbar.style.display = 'none';
+        }
+
+        // Optimize scroll performance on mobile
+        let mobileScrollTimeout;
+        const mobileScrollHandler = () => {
+            if (mobileScrollTimeout) {
+                clearTimeout(mobileScrollTimeout);
+            }
+            mobileScrollTimeout = setTimeout(() => {
+                updateHorizontalScroll();
+            }, 50); // Throttle scroll updates on mobile
+        };
+
+        // Replace the scroll listener with mobile-optimized version
+        window.removeEventListener('scroll', () => {
+            if (scrollTimeout) {
+                window.cancelAnimationFrame(scrollTimeout);
+            }
+            scrollTimeout = window.requestAnimationFrame(updateHorizontalScroll);
+        });
+
+        window.addEventListener('scroll', mobileScrollHandler, { passive: true });
+
+        // Add touch-specific navigation improvements
+        navLinks.forEach(link => {
+            link.addEventListener('touchend', (e) => {
+                // Ensure smooth scrolling works on touch devices
+                e.preventDefault();
+                link.click();
+            }, { passive: false });
+        });
+
+        // Prevent double-tap zoom on navigation
+        let lastTouchEnd = 0;
+        nav.addEventListener('touchend', (e) => {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, { passive: false });
+    }
+
+    // Handle orientation changes and window resize
+    function handleResize() {
+        const isMobileView = window.innerWidth <= 768;
+        
+        if (isMobileView) {
+            // Switch to mobile mode
+            sections.forEach((section) => {
+                section.style.position = 'relative';
+                section.style.transform = 'none';
+                section.style.opacity = '1';
+                section.style.pointerEvents = 'auto';
+            });
+            
+            if (customScrollbar) {
+                customScrollbar.style.display = 'none';
+            }
+        } else {
+            // Switch to desktop mode
+            sections.forEach((section) => {
+                section.style.position = '';
+                section.style.transform = '';
+                section.style.opacity = '';
+                section.style.pointerEvents = '';
+            });
+            
+            if (customScrollbar) {
+                customScrollbar.style.display = '';
+            }
+            
+            // Close mobile menu if open
+            if (hamburger && navLinks) {
+                hamburger.classList.remove('active');
+                navLinks.classList.remove('active');
+            }
+            
+            updateHorizontalScroll();
+        }
+    }
+
+    window.addEventListener('orientationchange', () => {
+        setTimeout(() => {
+            handleResize();
+        }, 100);
+    });
+
+    window.addEventListener('resize', () => {
+        handleResize();
     });
 });
 
