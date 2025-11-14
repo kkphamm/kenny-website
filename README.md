@@ -66,7 +66,6 @@ Note: Backdrop filters require modern browsers for full glass effect.
 **Kenny Pham**
 - 🎓 Pursuing EECS at UC Berkeley (2025-2027)
 - 💼 Experience in QA and Customer Service
-- 🔬 Currently working on WorldCraft research project
 - 📫 Contact: kpham092805@berkeley.edu
 
 ## 🔗 Connect

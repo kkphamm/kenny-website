@@ -5,9 +5,46 @@
     box-sizing: border-box;
 }
 
+/* CSS Custom Properties (Variables) */
+:root {
+    /* Glass Effect Colors */
+    --glass-bg-high: rgba(255, 255, 255, 0.95);
+    --glass-bg-medium: rgba(255, 255, 255, 0.85);
+    --glass-bg-low: rgba(255, 255, 255, 0.5);
+    --glass-bg-light: rgba(255, 255, 255, 0.4);
+    --glass-bg-subtle: rgba(255, 255, 255, 0.3);
+    --glass-bg-faint: rgba(255, 255, 255, 0.2);
+    --glass-bg-minimal: rgba(255, 255, 255, 0.1);
+    
+    /* Text Colors */
+    --text-primary: #111;
+    --text-secondary: #222;
+    --text-tertiary: #333;
+    --text-muted: #444;
+    --text-light: #555;
+    --text-black: #000;
+    
+    /* Border Radius */
+    --radius-xs: 12px;
+    --radius-sm: 16px;
+    --radius-md: 20px;
+    --radius-lg: 25px;
+    --radius-xl: 50px;
+    
+    /* Backdrop Filters */
+    --blur-strong: blur(20px) saturate(180%);
+    --blur-medium: blur(10px) saturate(180%);
+    
+    /* Shadows */
+    --shadow-glass: inset 0 2px 4px rgba(255, 255, 255, 0.3), 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    --shadow-glass-hover: inset 0 2px 4px rgba(255, 255, 255, 0.25), 0 12px 40px 0 rgba(0, 0, 0, 0.4);
+    --shadow-text: 0 1px 3px rgba(0, 0, 0, 0.15);
+    --shadow-text-strong: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
 /* Body Styling */
 body {
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     color: white;
     min-height: 100vh;
     overflow-x: hidden;
@@ -45,11 +82,11 @@ html::-webkit-scrollbar {
     width: 12px;
     height: 60%;
     max-height: 600px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px) saturate(180%);
-    -webkit-backdrop-filter: blur(10px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 20px;
+    background: var(--glass-bg-minimal);
+    backdrop-filter: var(--blur-medium);
+    -webkit-backdrop-filter: var(--blur-medium);
+    border: 1px solid var(--glass-bg-subtle);
+    border-radius: var(--radius-md);
     z-index: 999;
     box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.2),
                 0 4px 16px rgba(0, 0, 0, 0.2);
@@ -149,16 +186,11 @@ html::-webkit-scrollbar {
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     
-    /* Glass text effect - more transparent */
-    background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 0.5) 0%, 
-        rgba(255, 255, 255, 0.25) 50%, 
-        rgba(255, 255, 255, 0.4) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    /* Glass text effect - uniform solid fill */
+    color: rgba(255, 255, 255, 0.5);
+    -webkit-text-fill-color: rgba(255, 255, 255, 0.5);
     
-    /* Glass stroke/outline - more transparent */
+    /* Glass stroke/outline */
     -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.3);
     
     /* Glass lighting and depth */
@@ -197,12 +229,12 @@ html::-webkit-scrollbar {
     top: 30px;
     left: 50%;
     transform: translateX(-50%);
-    border-radius: 50px;
+    border-radius: var(--radius-xl);
     padding: 15px 30px;
-    backdrop-filter: blur(10px) saturate(180%);
-    -webkit-backdrop-filter: blur(10px) saturate(180%);
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: var(--blur-medium);
+    -webkit-backdrop-filter: var(--blur-medium);
+    background: var(--glass-bg-minimal);
+    border: 1px solid var(--glass-bg-subtle);
     box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 8px 32px 0 rgba(0, 0, 0, 0.3);
     display: flex;
     justify-content: space-around;
@@ -251,17 +283,17 @@ html::-webkit-scrollbar {
     top: 20px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
-    background: rgba(255, 255, 255, 0.85);
+    background: var(--glass-bg-medium);
     animation: none;
     z-index: 1000;
 }
 
 #main-nav.fixed-nav a {
-    color: #333;
+    color: var(--text-tertiary);
 }
 
 #main-nav.fixed-nav a:hover {
-    color: #000;
+    color: var(--text-black);
     background: rgba(0, 0, 0, 0.1);
 }
 
@@ -312,40 +344,38 @@ section {
     width: 90%;
     min-height: 400px;
     padding: 40px;
-    color: #222;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border-radius: 25px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 
-        inset 0 2px 4px rgba(255, 255, 255, 0.3),
-        0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    color: var(--text-secondary);
+    background: var(--glass-bg-high);
+    backdrop-filter: var(--blur-strong);
+    -webkit-backdrop-filter: var(--blur-strong);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-bg-light);
+    box-shadow: var(--shadow-glass);
 }
 
 .content-card h2 {
     margin-bottom: 20px;
     font-size: 2.5rem;
-    color: #111;
+    color: var(--text-primary);
     font-weight: 700;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    text-shadow: var(--shadow-text);
 }
 
 .content-card h3 {
     margin-top: 25px;
     margin-bottom: 15px;
     font-size: 1.8rem;
-    color: #222;
+    color: var(--text-secondary);
     font-weight: 600;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    text-shadow: var(--shadow-text);
 }
 
 .content-card p {
     font-size: 1.1rem;
     line-height: 1.6;
-    color: #333;
+    color: var(--text-tertiary);
     margin-bottom: 10px;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    text-shadow: var(--shadow-text-strong);
 }
 
 .education-item, .experience-item {
@@ -355,13 +385,13 @@ section {
 .education-item strong, .experience-item strong {
     display: block;
     font-size: 1.2rem;
-    color: #111;
+    color: var(--text-primary);
 }
 
 .date {
     display: block;
     font-style: italic;
-    color: #555;
+    color: var(--text-light);
     margin: 5px 0;
 }
 
@@ -376,7 +406,7 @@ section {
 
 .company {
     font-weight: 600;
-    color: #444;
+    color: var(--text-muted);
 }
 
 .experience-detail ul {
@@ -387,7 +417,7 @@ section {
 .experience-detail li {
     margin-bottom: 8px;
     line-height: 1.5;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    text-shadow: var(--shadow-text-strong);
 }
 
 /* Projects Grid - 2x2 Layout */
@@ -401,37 +431,33 @@ section {
 }
 
 .project-card {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: var(--glass-bg-high);
+    backdrop-filter: var(--blur-strong);
+    -webkit-backdrop-filter: var(--blur-strong);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--glass-bg-light);
     padding: 35px;
     min-height: 200px;
-    box-shadow: 
-        inset 0 2px 4px rgba(255, 255, 255, 0.3),
-        0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-glass);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .project-card:hover {
     transform: translateY(-5px);
-    box-shadow: 
-        inset 0 2px 4px rgba(255, 255, 255, 0.25),
-        0 12px 40px 0 rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-glass-hover);
 }
 
 .project-card h3 {
     margin: 0 0 10px 0;
     font-size: 1.4rem;
-    color: #111;
+    color: var(--text-primary);
     font-weight: 700;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    text-shadow: var(--shadow-text);
 }
 
 .tech-stack {
     font-size: 0.9rem;
-    color: #555;
+    color: var(--text-light);
     font-style: italic;
     margin-bottom: 12px;
     font-weight: 600;
@@ -440,9 +466,9 @@ section {
 .project-card p {
     font-size: 1rem;
     line-height: 1.5;
-    color: #333;
+    color: var(--text-tertiary);
     margin: 0;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    text-shadow: var(--shadow-text-strong);
 }
 
 /* Contact Section - Stacked Cards */
@@ -455,37 +481,35 @@ section {
 }
 
 .contact-card, .social-card {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: var(--glass-bg-high);
+    backdrop-filter: var(--blur-strong);
+    -webkit-backdrop-filter: var(--blur-strong);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--glass-bg-light);
     padding: 30px;
-    box-shadow: 
-        inset 0 2px 4px rgba(255, 255, 255, 0.3),
-        0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-glass);
 }
 
 .contact-card h2 {
     margin: 0 0 20px 0;
     font-size: 2rem;
-    color: #111;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    color: var(--text-primary);
+    text-shadow: var(--shadow-text);
 }
 
 .contact-info p {
     margin: 15px 0;
     font-size: 1.1rem;
-    color: #000;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    color: var(--text-black);
+    text-shadow: var(--shadow-text-strong);
 }
 
 .contact-info strong {
-    color: #000;
+    color: var(--text-black);
 }
 
 .contact-info a {
-    color: #111;
+    color: var(--text-primary);
     text-decoration: none;
     transition: color 0.2s ease;
 }
@@ -497,9 +521,9 @@ section {
 .social-card h3 {
     margin: 0 0 20px 0;
     font-size: 1.5rem;
-    color: #111;
+    color: var(--text-primary);
     text-align: center;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    text-shadow: var(--shadow-text);
 }
 
 .social-links {
@@ -513,7 +537,7 @@ section {
     flex-direction: column;
     align-items: center;
     gap: 10px;
-    color: #111;
+    color: var(--text-primary);
     text-decoration: none;
     transition: transform 0.3s ease, color 0.3s ease;
 }
@@ -530,7 +554,7 @@ section {
 .social-link span {
     font-weight: 600;
     font-size: 1.1rem;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    text-shadow: var(--shadow-text-strong);
 }
 
 /* Responsive adjustments */
