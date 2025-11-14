@@ -10,10 +10,16 @@ html {
     -webkit-text-size-adjust: 100%;
     -ms-text-size-adjust: 100%;
     touch-action: manipulation;
+    /* Chrome mobile smooth scrolling */
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
 }
 
 *, *::before, *::after {
     -webkit-tap-highlight-color: transparent;
+    /* Chrome mobile performance */
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 /* CSS Custom Properties (Variables) */
@@ -64,6 +70,16 @@ body {
     background-size: cover;
     background-position: center center;
     background-attachment: fixed;
+    /* Chrome mobile viewport fix */
+    position: relative;
+    width: 100%;
+}
+
+/* Chrome mobile background fix */
+@media (max-width: 768px) {
+    body {
+        background-attachment: scroll; /* Fixed attachment causes issues on Chrome mobile */
+    }
 }
 
 /* Hide scrollbar for all browsers */
@@ -184,6 +200,12 @@ html::-webkit-scrollbar {
     letter-spacing: 0.05em;
 }
 
+.name-break {
+    display: block;
+    height: 0;
+    margin: 10px 0;
+}
+
 /* Individual Letter Styling - Glass Material */
 #name-display span {
     display: inline-block;
@@ -191,6 +213,7 @@ html::-webkit-scrollbar {
     opacity: 0;
     transform: translateY(-50px);
     position: relative;
+    will-change: opacity, transform;
     
     /* Smooth font rendering */
     -webkit-font-smoothing: antialiased;
@@ -408,8 +431,19 @@ section {
         pointer-events: auto;
         height: auto;
         min-height: 100vh;
-        padding: 80px 5vw 60px;
+        padding: 80px 5vw 80px;
         margin: 0;
+    }
+
+    /* Add larger gap between projects and experience */
+    #projects {
+        padding-bottom: 120px;
+        margin-bottom: 60px;
+    }
+
+    #experience {
+        padding-top: 100px;
+        margin-top: 40px;
     }
 }
 
@@ -678,12 +712,39 @@ section {
 
 /* Mobile Responsive adjustments */
 @media (max-width: 768px) {
-    /* Hero Section */
+    /* Hero Section - Center name vertically */
     #name-display {
-        bottom: 5vh;
-        left: 5vw;
-        right: 5vw;
-        font-size: clamp(2rem, 6vw, 4rem);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        bottom: auto;
+        right: auto;
+        font-size: clamp(4rem, 12vw, 8rem);
+        text-align: center;
+        line-height: 1.3;
+        width: 90%;
+        /* Chrome mobile optimization */
+        -webkit-transform: translate(-50%, -50%);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+    }
+
+    .name-break {
+        margin: 20px 0;
+    }
+
+    #name-display span {
+        margin: 0 3px;
+    }
+
+    /* Ensure proper spacing between all sections */
+    #about {
+        padding-top: 100px;
+    }
+
+    #contact {
+        padding-bottom: 100px;
     }
 
     /* Navigation - Show hamburger menu */
@@ -753,6 +814,11 @@ section {
         padding: 25px 18px;
         min-height: auto;
         width: 94%;
+        /* Chrome mobile glass effect optimization */
+        backdrop-filter: var(--blur-strong);
+        -webkit-backdrop-filter: var(--blur-strong);
+        will-change: transform;
+        transform: translateZ(0);
     }
 
     .content-card h2 {
@@ -784,6 +850,11 @@ section {
 
     .project-card {
         padding: 20px;
+        /* Chrome mobile glass effect optimization */
+        backdrop-filter: var(--blur-strong);
+        -webkit-backdrop-filter: var(--blur-strong);
+        will-change: transform;
+        transform: translateZ(0);
     }
 
     .project-card h3 {
@@ -806,6 +877,11 @@ section {
 
     .contact-card, .social-card {
         padding: 25px 20px;
+        /* Chrome mobile glass effect optimization */
+        backdrop-filter: var(--blur-strong);
+        -webkit-backdrop-filter: var(--blur-strong);
+        will-change: transform;
+        transform: translateZ(0);
     }
 
     .contact-card h2 {
@@ -829,12 +905,17 @@ section {
 
 /* Small Mobile phones */
 @media (max-width: 480px) {
-    /* Hero */
+    /* Hero - Keep centered */
     #name-display {
-        font-size: clamp(1.5rem, 5vw, 3rem);
-        bottom: 4vh;
-        left: 4vw;
-        right: 4vw;
+        font-size: clamp(3rem, 10vw, 6rem);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 85%;
+    }
+
+    .name-break {
+        margin: 18px 0;
     }
 
     /* Navigation - Smaller */
@@ -886,8 +967,10 @@ section {
 /* Landscape mobile orientation */
 @media (max-width: 900px) and (max-height: 500px) and (orientation: landscape) {
     #name-display {
-        font-size: clamp(1.5rem, 4vh, 3rem);
-        bottom: 3vh;
+        font-size: clamp(3rem, 8vh, 6rem);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
     }
 
     #main-nav {

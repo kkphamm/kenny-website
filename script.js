@@ -3,15 +3,32 @@
     // Select the name display container
     const nameContainer = document.getElementById('name-display');
     
+    // Detect mobile
+    const isMobile = window.innerWidth <= 768;
+    
     // Define the target name
-    const myName = "Kenny     Pham";
+    let myName;
+    if (isMobile) {
+        // Mobile: Split first and last name into separate lines
+        myName = "Kenny\nPham";
+    } else {
+        // Desktop: Keep on one line with spaces
+        myName = "Kenny     Pham";
+    }
     
     // Create and append span elements for each character
     for (let i = 0; i < myName.length; i++) {
-        const span = document.createElement('span');
-        span.textContent = myName[i];
-        span.className = 'glass-letter';
-        nameContainer.appendChild(span);
+        if (myName[i] === '\n') {
+            // Add a line break for mobile
+            const br = document.createElement('br');
+            br.className = 'name-break';
+            nameContainer.appendChild(br);
+        } else {
+            const span = document.createElement('span');
+            span.textContent = myName[i];
+            span.className = 'glass-letter';
+            nameContainer.appendChild(span);
+        }
     }
     
     // Apply staggered animation to each letter (slower timing)
@@ -26,7 +43,7 @@
     
     // Calculate when the last letter finishes animating
     // Last letter delay + animation duration
-    const lastLetterDelay = (myName.length - 1) * 0.2;
+    const lastLetterDelay = (letters.length - 1) * 0.2;
     const nameAnimationEnd = lastLetterDelay + 1.2; // in seconds
     
     // Animate navigation bar after name animation completes
@@ -280,6 +297,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mobile-specific optimizations
     const isMobile = window.innerWidth <= 768;
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+    const isChromeMobile = isChrome && isMobile;
 
     if (isMobile) {
         // Disable horizontal scrolling on mobile - sections stack vertically
@@ -288,7 +307,23 @@ document.addEventListener('DOMContentLoaded', () => {
             section.style.transform = 'none';
             section.style.opacity = '1';
             section.style.pointerEvents = 'auto';
+            
+            // Chrome mobile specific optimization
+            if (isChromeMobile) {
+                section.style.webkitTransform = 'translateZ(0)';
+                section.style.transform = 'translateZ(0)';
+            }
         });
+
+        // Chrome mobile viewport height fix
+        if (isChromeMobile) {
+            const setViewportHeight = () => {
+                const vh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', `${vh}px`);
+            };
+            setViewportHeight();
+            window.addEventListener('resize', setViewportHeight);
+        }
 
         // Override the horizontal scroll function for mobile
         function updateHorizontalScroll() {
