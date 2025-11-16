@@ -93,7 +93,74 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             nav.classList.remove('fixed-nav');
         }
+        
+        // Update active navigation link
+        updateActiveNavLink();
     });
+    
+    // Function to update active navigation link based on current section
+    function updateActiveNavLink() {
+        const navLinks = document.querySelectorAll('#main-nav a');
+        const isMobileView = window.innerWidth <= 768;
+        
+        if (isMobileView) {
+            // Mobile: Check which section is in viewport vertically
+            let currentSection = null;
+            let maxVisibility = 0;
+            
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                const viewportHeight = window.innerHeight;
+                
+                // Calculate how much of the section is visible
+                const visibleTop = Math.max(0, rect.top);
+                const visibleBottom = Math.min(viewportHeight, rect.bottom);
+                const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+                const visibilityRatio = visibleHeight / viewportHeight;
+                
+                if (visibilityRatio > maxVisibility) {
+                    maxVisibility = visibilityRatio;
+                    currentSection = section;
+                }
+            });
+            
+            // Update active class
+            navLinks.forEach(link => {
+                const targetId = link.getAttribute('href').substring(1);
+                if (currentSection && currentSection.id === targetId) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        } else {
+            // Desktop: Check which section is most centered (horizontal scroll)
+            let currentSection = null;
+            let minDistance = Infinity;
+            
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                const sectionCenter = rect.left + rect.width / 2;
+                const viewportCenter = window.innerWidth / 2;
+                const distance = Math.abs(sectionCenter - viewportCenter);
+                
+                if (distance < minDistance && rect.left < viewportCenter && rect.right > viewportCenter) {
+                    minDistance = distance;
+                    currentSection = section;
+                }
+            });
+            
+            // Update active class
+            navLinks.forEach(link => {
+                const targetId = link.getAttribute('href').substring(1);
+                if (currentSection && currentSection.id === targetId) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+    }
 
     // 2. Horizontal Scroll Effect (Slower)
     function updateHorizontalScroll() {
@@ -151,6 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial setup
     updateHorizontalScroll();
+    updateActiveNavLink(); // Set initial active link
     
     // Update on scroll with throttling for performance
     let scrollTimeout;
@@ -162,7 +230,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Update on resize
-    window.addEventListener('resize', updateHorizontalScroll);
+    window.addEventListener('resize', () => {
+        updateHorizontalScroll();
+        updateActiveNavLink(); // Update active link on resize
+    });
 
     // 4. Draggable Custom Scrollbar
     let isDragging = false;
@@ -263,6 +334,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     behavior: 'smooth'
                 });
             }
+            
+            // Update active link after a brief delay to ensure scroll position is updated
+            setTimeout(() => {
+                updateActiveNavLink();
+            }, 100);
         });
     });
 

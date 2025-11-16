@@ -340,6 +340,13 @@ html::-webkit-scrollbar {
     transform: scale(1.05) translateY(0);
 }
 
+/* Active Navigation Link */
+#main-nav a.active {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05) translateY(0);
+    font-weight: 600;
+}
+
 /* Navigation Link Fall Animation */
 @keyframes navLinkFall {
     0% {
@@ -370,6 +377,12 @@ html::-webkit-scrollbar {
 #main-nav.fixed-nav a:hover {
     color: var(--text-black);
     background: rgba(0, 0, 0, 0.1);
+}
+
+#main-nav.fixed-nav a.active {
+    color: var(--text-black);
+    background: rgba(0, 0, 0, 0.15);
+    font-weight: 600;
 }
 
 /* Main Content Area - Horizontal Scroll Container */
@@ -786,6 +799,11 @@ section {
 
     #main-nav a:hover {
         background: var(--glass-bg-subtle);
+    }
+    
+    #main-nav a.active {
+        background: var(--glass-bg-medium);
+        font-weight: 600;
     }
 
     /* Sticky nav on mobile */
