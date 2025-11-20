@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="theme-color" content="#1a1a2e">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Kenny - Portfolio</title>
     <link rel="icon" type="image/png" href="images/bonsai.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,135 +12,103 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Hero Section -->
     <header id="hero-section">
-        <!-- Full-Screen Background Container -->
-        <div id="background-container">
-            <!-- Darkening Overlay -->
-            <div id="content-overlay"></div>
-        </div>
-
-        <!-- Navigation Bar -->
+        <div id="background-container"><div id="content-overlay"></div></div>
         <nav id="main-nav">
-            <button id="mobile-menu-toggle" class="hamburger" aria-label="Toggle menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+            <button id="mobile-menu-toggle" class="hamburger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
             <div class="nav-links">
                 <a href="#about">About</a>
-                <a href="#projects">Projects</a>
                 <a href="#experience">Experience</a>
+                <a href="#projects">Projects</a>
                 <a href="#contact">Contact</a>
             </div>
         </nav>
-
-        <!-- Animated Name Display -->
         <div id="name-display"></div>
     </header>
 
-    <!-- Main Content Area -->
     <main id="main-content">
         <section id="about">
-            <div class="content-card">
+            <div class="content-card glass-panel">
                 <h2>About Me</h2>
-                <p class="bio">Welcome to my page! I am a motivated student looking to have a career building AI for the benefit of society. Please reach out to chat more.</p>
-                
+                <p class="bio">Welcome! I am a motivated student looking to have a career building AI for the benefit of society. Feel free to reach out, I would love to chat! Hope you like my website!</p>
                 <h3>Education</h3>
-                <div class="education-item">
-                    <strong>University of California, Berkeley</strong>
-                    <span class="date">Aug 2025 – Expected May 2027</span>
-                    <p>Bachelor of Science in Electrical Engineering and Computer Sciences</p>
+                <div class="item"><strong>UC Berkeley</strong><span class="date">Aug 2025 – expected May 2027</span><p>B.S. in Electrical Engineering and Computer Science</p></div>
+                <div class="item"><strong>Irvine Valley College</strong><span class="date">Aug 2023 – May 2025</span><p>A.S. in Physics & Computer Science - 4.0 GPA</p></div>
+            </div>
+        </section>
+
+        <section id="experience">
+            <div class="content-card glass-panel">
+                <h2>Experience</h2>
+                <div class="experience-detail">
+                    <h3>Boba Barista</h3>
+                    <p class="company">RedStraw Tea Bar | Aug 2024 – Aug 2025</p>
+                    <ul><li>Delivered exceptional customer service in high-volume environment.</li></ul>
                 </div>
-                <div class="education-item">
-                    <strong>Irvine Valley College</strong>
-                    <span class="date">Aug 2023 – May 2025</span>
-                    <p>Associate in Science, Physics and Computer Science - 4.0 GPA</p>
+                <div class="experience-detail">
+                    <h3>QA Assistant Intern</h3>
+                    <p class="company">Marvin Test Solutions | June 2023 – Aug 2023</p>
+                    <ul>
+                        <li>Maintained data integrity using MS Excel.</li>
+                        <li>Supported HAZMAT and equipment calibration procedures.</li>
+                    </ul>
                 </div>
             </div>
         </section>
 
         <section id="projects">
             <div class="projects-grid">
-                <div class="project-card">
+                <div class="project-card glass-panel">
                     <h3>jask – AI Interview Practice</h3>
-                    <p class="tech-stack">LiveKit, WebRTC, Anthropic Claude, Node.js</p>
-                    <p>
-                        jask is an AI-powered technical interviewer that simulates a live remote interview, analyzing your code in real time and giving instant, specific feedback on correctness, logic, efficiency, and style so you can practice under realistic pressure.
-                        <a href="https://devpost.com/software/jask" target="_blank" rel="noopener noreferrer">View project on Devpost</a>.
-                    </p>
+                    <p class="tech-stack">LiveKit, WebRTC, Claude, Node.js</p>
+                    <p>AI-powered technical interviewer analyzing code in real-time. <a href="https://devpost.com/software/jask" target="_blank">View on Devpost</a>.</p>
                 </div>
-                <div class="project-card">
+                <div class="project-card glass-panel">
                     <h3>WorldCraft</h3>
                     <p class="tech-stack">Python, Nerfstudio, Semantic NeRF</p>
-                    <p>UC Berkeley research project recreating campus in Minecraft using voxelization pipeline and Semantic NeRF models.</p>
+                    <p>UC Berkeley research project recreating campus in Minecraft using voxelization pipeline.</p>
                 </div>
-                <div class="project-card">
+                <div class="project-card glass-panel">
                     <h3>Heart Disease Prediction</h3>
                     <p class="tech-stack">Python, scikit-learn, Pandas</p>
-                    <p>ML models (Random Forest, Logistic Regression) to predict heart disease with feature selection and hyperparameter tuning.</p>
+                    <p>ML models (Random Forest, Logistic Regression) with feature selection.</p>
                 </div>
-                <div class="project-card">
+                <div class="project-card glass-panel">
                     <h3>Hey Computer</h3>
                     <p class="tech-stack">Python, Picovoice, OpenAI Whisper</p>
-                    <p>Voice assistant with wake word detection, audio recording, and speech-to-text transcription for application control.</p>
+                    <p>Voice assistant with wake word detection and speech-to-text transcription.</p>
                 </div>
-                <div class="project-card">
+                <div class="project-card glass-panel">
                     <h3>Web Applications</h3>
-                    <p class="tech-stack">HTML, CSS, JavaScript, Node.js</p>
-                    <p>Full-stack blogs and portfolios with responsive designs and interactive features from The Odin Project.</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="experience">
-            <div class="content-card">
-                <h2>Experience</h2>
-                <div class="experience-detail">
-                    <h3>Boba Barista (Part-Time)</h3>
-                    <p class="company">RedStraw Tea Bar, California</p>
-                    <p class="date">August 2024 – August 2025</p>
-                    <ul>
-                        <li>Delivered exceptional customer service to foster a welcoming and efficient environment</li>
-                        <li>Collaborated with baristas to ensure seamless operations during high-volume hours</li>
-                    </ul>
-                </div>
-                <div class="experience-detail">
-                    <h3>Quality Assurance Assistant Intern</h3>
-                    <p class="company">Marvin Test Solutions, Irvine, CA</p>
-                    <p class="date">June 2023 – August 2023</p>
-                    <ul>
-                        <li>Performed data entry and collection in MS Excel, ensuring data integrity for analysis</li>
-                        <li>Supported HAZMAT collection procedures, maintaining compliance with company standards</li>
-                        <li>Assisted with equipment collection and calibration to ensure data accuracy across systems</li>
-                    </ul>
+                    <p class="tech-stack">HTML, CSS, JS, Node.js</p>
+                    <p>Full-stack blogs and portfolios from The Odin Project.</p>
                 </div>
             </div>
         </section>
 
         <section id="contact">
             <div class="contact-container">
-                <div class="contact-card">
+                <div class="contact-card glass-panel">
                     <h2>Get In Touch</h2>
                     <div class="contact-info">
                         <p><strong>Email:</strong> <a href="mailto:kpham092805@berkeley.edu">kpham092805@berkeley.edu</a></p>
                         <p><strong>Phone:</strong> 949-664-6794</p>
                     </div>
                 </div>
-                <div class="social-card">
-                    <h3>Connect With Me</h3>
+                <div class="social-card glass-panel">
+                    <h3>Connect</h3>
                     <div class="social-links">
                         <a href="https://www.linkedin.com/in/kenny-pham-a49723245/" target="_blank" class="social-link">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                            </svg>
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
                             <span>LinkedIn</span>
                         </a>
                         <a href="https://github.com/kkphamm" target="_blank" class="social-link">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                            </svg>
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                             <span>GitHub</span>
+                        </a>
+                        <a href="https://www.instagram.com/kkphamm" target="_blank" class="social-link">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                            <span>Instagram</span>
                         </a>
                     </div>
                 </div>
@@ -151,12 +116,7 @@
         </section>
     </main>
 
-    <!-- Custom Glass Scrollbar -->
-    <div id="custom-scrollbar">
-        <div id="custom-scrollbar-thumb"></div>
-    </div>
-
+    <div id="custom-scrollbar"><div id="custom-scrollbar-thumb"></div></div>
     <script src="script.js"></script>
 </body>
 </html>
-
