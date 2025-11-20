@@ -3,10 +3,9 @@
 A modern, interactive portfolio featuring glassmorphism design and unique horizontal scrolling.
 
 ## Features
-- **Glassmorphism UI**: Frosted glass effects on cards and navigation.
 - **Dynamic Animations**: Staggered letter animations and smooth transitions.
 - **Hybrid Navigation**: Horizontal scrolling on Desktop, standard vertical stacking on Mobile.
-- **Custom Controls**: Interactive, draggable glass scrollbar.
+- **Custom Controls**: Interactive, draggable scrollbar.
 
 ## Tech Stack
 - **Core**: HTML5, CSS3, Vanilla JavaScript.
@@ -16,7 +15,7 @@ A modern, interactive portfolio featuring glassmorphism design and unique horizo
 ## Sections
 1. **Hero**: Animated introduction.
 2. **About**: Education and bio.
-3. **Projects**: Grid showcase (WorldCraft, AI Tools, Web Apps).
+3. **Projects**: Grid showcase.
 4. **Experience**: Professional history.
 5. **Contact**: Social links and info.
 

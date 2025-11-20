@@ -19,13 +19,13 @@ body {
 /* UI Components */
 .glass-panel {
     background: var(--glass-high); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
-    border-radius: 25px; border: 1px solid rgba(255,255,255,0.4); 
+    border-radius: clamp(1rem, 3vw, 1.5rem); border: 1px solid rgba(255,255,255,0.4); 
     box-shadow: 
         0 8px 32px rgba(0, 0, 0, 0.2),
         0 2px 8px rgba(0, 0, 0, 0.1),
         inset 0 1px 0 rgba(255, 255, 255, 0.4),
         inset 0 -1px 0 rgba(255, 255, 255, 0.1);
-    color: var(--text-sec); padding: 40px; transition: transform 0.3s;
+    color: var(--text-sec); padding: clamp(1.5rem, 4vw, 2.5rem); transition: transform 0.3s;
     position: relative;
     transform-style: preserve-3d;
     will-change: transform;
@@ -162,50 +162,122 @@ section {
 }
 
 /* Content Specifics - Better Typography */
-.content-card { max-width: 900px; width: 90%; }
+.content-card { max-width: 1000px; width: 92%; }
+.content-card.glass-panel { padding: clamp(1.25rem, 2.5vw, 1.75rem) clamp(2rem, 4vw, 2.5rem); }
 .content-card:hover,
 .contact-card:hover,
 .social-card:hover {
-    animation: subtleTilt 8s ease-in-out infinite;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.25), inset 0 2px 4px rgba(255,255,255,0.3);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.25), 
+                inset 0 2px 4px rgba(255,255,255,0.3),
+                0 0 30px rgba(0, 102, 204, 0.3); /* Highlight glow */
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
 }
-.content-card h2 { font-size: 2.5rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--text-main); line-height: 1.2; }
-.content-card h3 { font-size: 1.75rem; font-weight: 600; margin-top: 2rem; margin-bottom: 1rem; color: var(--text-main); line-height: 1.3; }
-.content-card p { font-size: 1.1rem; line-height: 1.7; margin-bottom: 1rem; color: var(--text-sec); }
-.content-card .bio { font-size: 1.15rem; line-height: 1.8; margin-bottom: 1.5rem; }
-.content-card .item { margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(0,0,0,0.1); }
+.content-card h2 { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; margin-bottom: clamp(0.5rem, 1.5vw, 1rem); color: var(--text-main); line-height: 1.2; }
+.content-card h3 { font-size: clamp(1.25rem, 3vw, 1.75rem); font-weight: 600; margin-top: clamp(0.75rem, 2vw, 1.5rem); margin-bottom: clamp(0.4rem, 1.2vw, 0.75rem); color: var(--text-main); line-height: 1.3; }
+.content-card p { font-size: clamp(0.95rem, 2vw, 1.1rem); line-height: 1.5; margin-bottom: clamp(0.4rem, 1.2vw, 0.75rem); color: var(--text-sec); }
+.content-card .bio { font-size: clamp(1rem, 2.2vw, 1.15rem); line-height: 1.6; margin-bottom: clamp(0.5rem, 1.5vw, 1rem); }
+.content-card .item { margin-bottom: clamp(0.5rem, 1.5vw, 1rem); padding-bottom: clamp(0.4rem, 1.2vw, 0.75rem); border-bottom: 1px solid rgba(0,0,0,0.1); }
 .content-card .item:last-child { border-bottom: none; }
-.content-card .item strong { display: block; font-size: 1.3rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.5rem; }
-.content-card .item .date { display: block; font-size: 0.95rem; color: #666; font-style: italic; margin-bottom: 0.5rem; }
-.content-card .item p { margin-top: 0.5rem; }
-.content-card .experience-detail { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(0,0,0,0.1); }
+.content-card .item strong { display: block; font-size: clamp(1.1rem, 2.5vw, 1.3rem); font-weight: 600; color: var(--text-main); margin-bottom: clamp(0.2rem, 0.8vw, 0.4rem); }
+.content-card .item .date { display: block; font-size: clamp(0.85rem, 1.8vw, 0.95rem); color: #666; font-style: italic; margin-bottom: clamp(0.2rem, 0.8vw, 0.4rem); }
+.content-card .item p { margin-top: clamp(0.2rem, 0.8vw, 0.4rem); }
+.content-card .experience-detail { margin-bottom: clamp(0.75rem, 2vw, 1.5rem); padding-bottom: clamp(0.5rem, 1.5vw, 1rem); border-bottom: 1px solid rgba(0,0,0,0.1); }
 .content-card .experience-detail:last-child { border-bottom: none; }
 .content-card .experience-detail h3 { margin-top: 0; }
-.content-card .experience-detail .company { font-weight: 600; color: #555; margin-bottom: 0.75rem; }
-.content-card .experience-detail ul { margin-left: 1.5rem; margin-top: 0.75rem; }
-.content-card .experience-detail li { line-height: 1.6; margin-bottom: 0.5rem; }
+.content-card .experience-detail .company { font-weight: 600; color: #555; margin-bottom: clamp(0.4rem, 1.2vw, 0.6rem); }
+.content-card .experience-detail ul { margin-left: clamp(1rem, 2.5vw, 1.5rem); margin-top: clamp(0.4rem, 1.2vw, 0.6rem); }
+.content-card .experience-detail li { line-height: 1.4; margin-bottom: clamp(0.2rem, 0.8vw, 0.4rem); }
 .content-card a { color: #0066cc; text-decoration: none; transition: color 0.2s; }
 .content-card a:hover { color: #004499; text-decoration: underline; }
 
-.projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1400px; width: 95%; }
-.project-card { padding: 25px; min-height: 180px; }
-.project-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.6rem; color: var(--text-main); line-height: 1.3; }
-.project-card .tech-stack { font-size: 0.85rem; color: #666; font-style: italic; margin-bottom: 0.75rem; font-weight: 500; }
-.project-card p { font-size: 0.95rem; line-height: 1.5; color: var(--text-sec); }
+/* Skills Grid Styles */
+.skills-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(1rem, 3vw, 1.5rem); /* Space between icons - responsive */
+    margin-top: clamp(0.5rem, 1.5vw, 1rem);
+    padding-top: clamp(0.4rem, 1.2vw, 0.75rem);
+    border-top: 1px solid rgba(0,0,0,0.1); /* Separator line */
+}
+
+.skill-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.4rem, 1.5vw, 0.5rem);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* This creates the bounce */
+    cursor: default;
+}
+
+.skill-item i {
+    font-size: clamp(2rem, 5vw, 3rem); /* Icon size - responsive to zoom */
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.4s ease;
+    /* If icons are too dark for your theme, uncomment line below */
+    /* filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); */
+}
+
+.skill-item span {
+    font-size: clamp(0.75rem, 1.5vw, 0.85rem);
+    font-weight: 500;
+    color: #666;
+    opacity: 0; /* Hide text by default for cleaner look */
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+}
+
+/* Hover Effects - Jelly Pop */
+.skill-item:hover {
+    transform: scale(1.2) translateY(-10px); /* Grows and floats up */
+}
+
+.skill-item:hover i {
+    transform: rotate(10deg); /* Slight tilt for the icon only */
+    filter: drop-shadow(0 5px 15px rgba(0, 102, 204, 0.4));
+}
+
+.skill-item:hover span {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Mobile Adjustment */
+@media (max-width: 768px) {
+    .skills-wrapper {
+        gap: 15px;
+        justify-content: center;
+    }
+    .skill-item i {
+        font-size: 2.5rem;
+    }
+    .skill-item span {
+        opacity: 1; /* Always show text on mobile */
+        transform: translateY(0);
+    }
+}
+
+.projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 2.5vw, 1.25rem); max-width: 1400px; width: 95%; }
+.project-card { padding: clamp(1.25rem, 3vw, 1.5rem); min-height: clamp(10rem, 25vw, 11.25rem); }
+.project-card h3 { font-size: clamp(1.1rem, 2.5vw, 1.25rem); font-weight: 700; margin-bottom: clamp(0.4rem, 1.2vw, 0.6rem); color: var(--text-main); line-height: 1.3; }
+.project-card .tech-stack { font-size: clamp(0.75rem, 1.8vw, 0.85rem); color: #666; font-style: italic; margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem); font-weight: 500; }
+.project-card p { font-size: clamp(0.85rem, 2vw, 0.95rem); line-height: 1.5; color: var(--text-sec); }
 .project-card a { color: #0066cc; text-decoration: none; transition: color 0.2s; }
 .project-card a:hover { color: #004499; text-decoration: underline; }
 .project-card:hover { 
-    animation: subtleTiltWithLift 8s ease-in-out infinite;
-    box-shadow: 0 12px 40px rgba(0,0,0,0.25), inset 0 2px 4px rgba(255,255,255,0.3);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.25), 
+                inset 0 2px 4px rgba(255,255,255,0.3),
+                0 0 30px rgba(0, 102, 204, 0.3); /* Highlight glow */
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
 }
 
-.contact-container { width: 90%; max-width: 700px; display: flex; flex-direction: column; gap: 20px; }
-.contact-card h2 { font-size: 2rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--text-main); }
-.contact-info p { font-size: 1.1rem; line-height: 1.7; margin-bottom: 0.75rem; color: var(--text-sec); }
+.contact-container { width: 90%; max-width: 700px; display: flex; flex-direction: column; gap: clamp(1rem, 2.5vw, 1.25rem); }
+.contact-card h2 { font-size: clamp(1.5rem, 3.5vw, 2rem); font-weight: 700; margin-bottom: clamp(0.75rem, 2vw, 1.5rem); color: var(--text-main); }
+.contact-info p { font-size: clamp(0.95rem, 2.2vw, 1.1rem); line-height: 1.7; margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem); color: var(--text-sec); }
 .contact-info a { color: #0066cc; text-decoration: none; transition: color 0.2s; }
 .contact-info a:hover { color: #004499; text-decoration: underline; }
-.social-card h3 { font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: var(--text-main); text-align: center; }
-.social-links { display: flex; justify-content: center; gap: 40px; margin-top: 10px; }
+.social-card h3 { font-size: clamp(1.25rem, 3vw, 1.5rem); font-weight: 600; margin-bottom: clamp(0.5rem, 1.5vw, 1rem); color: var(--text-main); text-align: center; }
+.social-links { display: flex; justify-content: center; gap: clamp(2rem, 5vw, 2.5rem); margin-top: clamp(0.5rem, 1.5vw, 0.625rem); }
 .social-link { display: flex; flex-direction: column; align-items: center; color: var(--text-main); text-decoration: none; transition: 0.3s; outline: none; border: none; background: none; }
 .social-link:focus { outline: none; border: none; }
 .social-link svg { transition: all 0.3s ease; filter: drop-shadow(0 0 0 rgba(0, 102, 204, 0)); outline: none; border: none; }
