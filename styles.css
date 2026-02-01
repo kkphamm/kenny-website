@@ -81,7 +81,7 @@ body {
 }
 #hero-section { height: 100vh; display: flex; justify-content: center; align-items: center; position: relative; }
 #background-container { position: absolute; inset: 0; background: url('images/background1.jpeg') center/cover no-repeat; z-index: -2; }
-#content-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); z-index: -1; }
+#content-overlay { position: absolute; inset: 0; background: transparent; z-index: -1; }
 
 /* Name Animation */
 #name-display {
@@ -339,8 +339,10 @@ section {
     #main-nav.fixed-nav a.active { background: rgba(0, 102, 204, 0.2); color: #0066cc; }
 }
 @media (max-width: 768px) {
-    body { background-attachment: scroll; }
+    body { background: url('images/mobile_bkg.jpeg') center/cover fixed; }
     #hero-section { height: 100vh; }
+    /* Hero uses body's fixed background only – no separate layer, so no change when scrolling */
+    #background-container { background: none; }
     #name-display { 
         top: 50%; 
         left: 50%; 
@@ -352,7 +354,9 @@ section {
     .hamburger { display: flex; cursor: pointer; }
     .nav-links { display: none; flex-direction: column; position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); width: 90vw; max-width: 300px; background: var(--glass-high); border-radius: 15px; padding: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
     .nav-links.active { display: flex; }
+    /* Nav always fixed on mobile so burger menu stays visible when scrolling */
     #main-nav { 
+        position: fixed;
         top: 20px; 
         left: 50%; 
         transform: translateX(-50%); 
@@ -361,9 +365,11 @@ section {
         align-items: center; 
         justify-content: center;
         padding: 12px 18px; 
-        gap: 15px; 
-        position: absolute; 
+        gap: 15px;
+        background: var(--glass-high);
+        z-index: 1000;
     }
+    #main-nav .hamburger span { background: #333; }
     #main-nav a { color: #333; opacity: 1; transform: none; width: 100%; text-align: left; font-size: 1.05rem; padding: 9.9px 22px; }
     #main-nav a.active { background: rgba(0, 102, 204, 0.15); color: #0066cc; }
     #main-nav.fixed-nav { 
