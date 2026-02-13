@@ -116,7 +116,8 @@ const App = {
                 e.preventDefault();
                 if (this.isMobile) {
                     document.getElementById(link.getAttribute('href').substring(1)).scrollIntoView({behavior:'smooth'});
-                    // Keep menu open - removed closing logic
+                    this.elems.navLinks.classList.remove('active');
+                    this.elems.hamburger.classList.remove('active');
                 } else {
                     const heroH = this.elems.hero.offsetHeight;
                     const scrollable = document.getElementById('main-content').offsetHeight - window.innerHeight - heroH;
