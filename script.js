@@ -1,7 +1,6 @@
 const App = {
     isMobile: window.innerWidth <= 768,
     currentProjectIndex: 1,
-    projectScrollTimeout: null,
     elems: {
         nav: document.getElementById('main-nav'),
         sections: document.querySelectorAll('section'),

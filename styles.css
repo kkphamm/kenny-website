@@ -5,7 +5,6 @@
     --text-main: #111;
     --text-sec: #222;
     --blur: blur(20px) saturate(180%);
-    --shadow: inset 0 2px 4px rgba(255,255,255,0.3), 0 8px 32px rgba(0,0,0,0.3);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -31,36 +30,6 @@ body {
     will-change: transform;
     max-width: 100%;
     box-sizing: border-box;
-}
-
-@keyframes subtleTilt {
-    0%, 100% {
-        transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0);
-    }
-    25% {
-        transform: perspective(1000px) rotateX(4deg) rotateY(-4deg) translateZ(5px);
-    }
-    50% {
-        transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0);
-    }
-    75% {
-        transform: perspective(1000px) rotateX(-4deg) rotateY(4deg) translateZ(5px);
-    }
-}
-
-@keyframes subtleTiltWithLift {
-    0%, 100% {
-        transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(-5px) translateZ(10px);
-    }
-    25% {
-        transform: perspective(1000px) rotateX(4deg) rotateY(-4deg) translateY(-5px) translateZ(15px);
-    }
-    50% {
-        transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(-5px) translateZ(10px);
-    }
-    75% {
-        transform: perspective(1000px) rotateX(-4deg) rotateY(4deg) translateY(-5px) translateZ(15px);
-    }
 }
 
 .glass-panel::before {
@@ -254,23 +223,23 @@ section {
 }
 
 /* Content Specifics - Better Typography (capped so cards stay readable on large screens) */
-.content-card { max-width: min(920px, 92vw); width: 92%; }
+.content-card { max-width: min(860px, 90vw); width: 90%; }
 #about .content-card { 
-    max-width: min(1104px, 92vw);
-    padding: clamp(1rem, 1.2vw, 1.5rem) clamp(1.5rem, 2vw, 2rem);
+    max-width: min(980px, 90vw);
+    padding: clamp(0.95rem, 1.1vw, 1.35rem) clamp(1.3rem, 1.9vw, 1.8rem);
 }
 #about .content-card h2 { font-size: clamp(1.35rem, 3vw, 1.85rem); }
 #about .content-card h3 { font-size: clamp(1.1rem, 2.5vw, 1.5rem); }
 #about .content-card .bio { font-size: clamp(0.9rem, 1.9vw, 1rem); line-height: 1.5; }
 #experience .content-card {
-    max-width: min(1104px, 92vw);
+    max-width: min(980px, 90vw);
 }
 #experience .content-card h2 { font-size: clamp(1.5rem, 3.5vw, 2.1rem); }
 #experience .content-card h3 { font-size: clamp(1.1rem, 2.5vw, 1.5rem); }
 #experience .content-card p { font-size: clamp(0.85rem, 1.8vw, 0.95rem); }
 #experience .content-card .company { font-size: clamp(0.85rem, 1.8vw, 0.95rem); }
 #experience .content-card li { font-size: clamp(0.85rem, 1.8vw, 0.95rem); line-height: 1.4; }
-.content-card.glass-panel { padding: clamp(1.25rem, 1.5vw, 1.75rem) clamp(1.5rem, 2.5vw, 2.25rem); }
+.content-card.glass-panel { padding: clamp(1rem, 1.2vw, 1.4rem) clamp(1.25rem, 2vw, 1.9rem); }
 .content-card:hover,
 .contact-card:hover,
 .social-card:hover {
@@ -375,7 +344,7 @@ section {
 .projects-grid { 
     position: relative;
     flex: 1;
-    min-height: clamp(26.5rem, 41.4vw, 31.1rem);
+    min-height: clamp(24.8rem, 38vw, 29rem);
     overflow: visible;
     padding: 20px 0;
 }
@@ -383,10 +352,10 @@ section {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: min(368px, 34.5vw);
-    min-width: 322px;
+    width: min(340px, 32vw);
+    min-width: 300px;
     padding: clamp(1.25rem, 2vw, 1.5rem);
-    height: clamp(24.7rem, 36.8vw, 27rem);
+    height: clamp(22.5rem, 34vw, 24.5rem);
     max-width: 100%;
     overflow: hidden;
     display: flex;
@@ -472,7 +441,7 @@ section {
     pointer-events: none;
 }
 
-.contact-container { width: 90%; max-width: min(640px, 90vw); display: flex; flex-direction: column; gap: clamp(1rem, 2vw, 1.25rem); }
+.contact-container { width: 88%; max-width: min(560px, 88vw); display: flex; flex-direction: column; gap: clamp(0.9rem, 1.6vw, 1.1rem); }
 .contact-card h2 { font-size: clamp(1.5rem, 3.5vw, 2rem); font-weight: 700; margin-bottom: clamp(0.75rem, 2vw, 1.5rem); color: var(--text-main); }
 .contact-info p { font-size: clamp(0.95rem, 2.2vw, 1.1rem); line-height: 1.7; margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem); color: var(--text-sec); }
 .contact-info a { color: #0066cc; text-decoration: none; transition: color 0.2s; }
@@ -529,8 +498,8 @@ section {
 
 /* Mobile / Tablet */
 @media (max-width: 1024px) { 
-    .projects-grid { min-height: clamp(24.2rem, 55.2vw, 28.8rem); }
-    .project-card { width: min(345px, 43.7vw); min-width: 288px; padding: 22px; height: clamp(21.9rem, 49.5vw, 25.3rem); }
+    .projects-grid { min-height: clamp(22rem, 50vw, 26.5rem); }
+    .project-card { width: min(320px, 40vw); min-width: 270px; padding: 20px; height: clamp(20rem, 46vw, 23rem); }
     .project-card.carousel-left { transform: translate(calc(-50% - 24%), -50%) scale(0.9) rotate(-3deg); }
     .project-card.carousel-right { transform: translate(calc(-50% + 24%), -50%) scale(0.9) rotate(3deg); }
     .carousel-arrow {
@@ -570,14 +539,13 @@ section {
 @media (max-width: 768px) {
     body {
         background-image: url('images/mobile_bkg.jpg');
-        background-position: center center;
-        background-size: cover;
+        background-position: center top;
+        background-size: auto 100dvh;
         background-repeat: no-repeat;
-        background-attachment: fixed;
+        background-attachment: scroll;
+        min-height: 100dvh;
     }
     #hero-section { height: 100vh; }
-    /* Hero uses body's fixed background only – no separate layer, so no change when scrolling */
-    #background-container { background: none; }
     /* Pfp directly in center; name towards bottom, full name visible */
     #hero-profile {
         top: 42%;
