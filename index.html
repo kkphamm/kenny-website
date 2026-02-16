@@ -132,9 +132,9 @@
                         <p>Converted real-world scenes into Minecraft-ready worlds using Neural Radiance Fields and semantic segmentation, then integrated NeRF reconstructions into voxelization and export workflows.</p>
                     </div>
                     <div class="project-card glass-panel">
-                        <h3>Personal Portfolio Website</h3>
+                        <h3>Personal Portfolio Website (This Website!!)</h3>
                         <p class="tech-stack">HTML5, CSS3, JavaScript, UI/UX | Dec 2025</p>
-                        <p>Built a fully responsive portfolio with a custom glassmorphism design system, advanced CSS animations, and deployment automation with custom DNS, SSL, and GitHub Actions CI/CD.</p>
+                        <p>Built a fully responsive portfolio with a custom glassmorphism design system, advanced CSS animations, and an integrated AI chatbot trained on my professional background. Features deployment automation with custom DNS, SSL, and GitHub Actions CI/CD.</p>
                     </div>
                     <div class="project-card glass-panel">
                         <h3>Jask - AI Interview Intelligence</h3>
@@ -201,6 +201,19 @@
     <script src="script.js"></script>
     
     <!-- Zapier Chatbot -->
+    <script>
+        // Reset chat history on page refresh
+        try {
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && (key.includes('zapier') || key.includes('chatbot'))) {
+                    keysToRemove.push(key);
+                }
+            }
+            keysToRemove.forEach(key => localStorage.removeItem(key));
+        } catch(e) { console.log('Could not clear chat history'); }
+    </script>
     <script async type='module' src='https://interfaces.zapier.com/assets/web-components/zapier-interfaces/zapier-interfaces.esm.js'></script>
     <zapier-interfaces-chatbot-embed is-popup='true' chatbot-id='cmlpsg65a0020j72qrrzh66ek'></zapier-interfaces-chatbot-embed>
 </body>
