@@ -16,19 +16,21 @@ body {
 }
 ::-webkit-scrollbar { display: none; }
 
-/* UI Components */
+/* UI Components – caps so bubbles never too big on any OS/viewport */
 .glass-panel {
     background: var(--glass-high); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
-    border-radius: clamp(1rem, 3vw, 1.5rem); border: 1px solid rgba(255,255,255,0.4); 
+    border-radius: clamp(1rem, 2vw, 1.5rem); border: 1px solid rgba(255,255,255,0.4); 
     box-shadow: 
         0 8px 32px rgba(0, 0, 0, 0.2),
         0 2px 8px rgba(0, 0, 0, 0.1),
         inset 0 1px 0 rgba(255, 255, 255, 0.4),
         inset 0 -1px 0 rgba(255, 255, 255, 0.1);
-    color: var(--text-sec); padding: clamp(1.5rem, 4vw, 2.5rem); transition: transform 0.3s;
+    color: var(--text-sec); padding: clamp(1.25rem, 2vw, 2rem); transition: transform 0.3s;
     position: relative;
     transform-style: preserve-3d;
     will-change: transform;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 @keyframes subtleTilt {
@@ -251,9 +253,9 @@ section {
     transform: translateY(-50%);
 }
 
-/* Content Specifics - Better Typography */
-.content-card { max-width: 1000px; width: 92%; }
-.content-card.glass-panel { padding: clamp(1.25rem, 2.5vw, 1.75rem) clamp(2rem, 4vw, 2.5rem); }
+/* Content Specifics - Better Typography (capped so cards stay readable on large screens) */
+.content-card { max-width: min(920px, 92vw); width: 92%; }
+.content-card.glass-panel { padding: clamp(1.25rem, 1.5vw, 1.75rem) clamp(1.5rem, 2.5vw, 2.25rem); }
 .content-card:hover,
 .contact-card:hover,
 .social-card:hover {
@@ -346,8 +348,8 @@ section {
     }
 }
 
-.projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 2.5vw, 1.25rem); max-width: 1400px; width: 95%; }
-.project-card { padding: clamp(1.25rem, 3vw, 1.5rem); min-height: clamp(10rem, 25vw, 11.25rem); }
+.projects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 1.5vw, 1.25rem); max-width: min(1200px, 95vw); width: 95%; }
+.project-card { padding: clamp(1.25rem, 2vw, 1.5rem); min-height: clamp(10rem, 20vw, 11.25rem); max-width: 100%; }
 .project-card h3 { font-size: clamp(1.1rem, 2.5vw, 1.25rem); font-weight: 700; margin-bottom: clamp(0.4rem, 1.2vw, 0.6rem); color: var(--text-main); line-height: 1.3; }
 .project-card .tech-stack { font-size: clamp(0.75rem, 1.8vw, 0.85rem); color: #666; font-style: italic; margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem); font-weight: 500; }
 .project-card p { font-size: clamp(0.85rem, 2vw, 0.95rem); line-height: 1.5; color: var(--text-sec); }
@@ -361,7 +363,7 @@ section {
     transition: all 0.3s ease;
 }
 
-.contact-container { width: 90%; max-width: 700px; display: flex; flex-direction: column; gap: clamp(1rem, 2.5vw, 1.25rem); }
+.contact-container { width: 90%; max-width: min(640px, 90vw); display: flex; flex-direction: column; gap: clamp(1rem, 2vw, 1.25rem); }
 .contact-card h2 { font-size: clamp(1.5rem, 3.5vw, 2rem); font-weight: 700; margin-bottom: clamp(0.75rem, 2vw, 1.5rem); color: var(--text-main); }
 .contact-info p { font-size: clamp(0.95rem, 2.2vw, 1.1rem); line-height: 1.7; margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem); color: var(--text-sec); }
 .contact-info a { color: #0066cc; text-decoration: none; transition: color 0.2s; }
@@ -386,6 +388,35 @@ section {
     border-radius: 20px; z-index: 999;
 }
 #custom-scrollbar-thumb { width: 100%; background: rgba(255,255,255,0.4); border-radius: 20px; position: absolute; cursor: grab; }
+
+/* Footer – fixed at bottom, visible on all sections except hero */
+.site-footer {
+    position: fixed;
+    bottom: 5px;
+    left: 0;
+    right: 0;
+    padding: 1rem 2rem;
+    padding-right: calc(2rem + 24px);
+    text-align: center;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.site-footer.footer-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+.site-footer p { margin: 0; }
+
+/* Hide "All rights reserved" on mobile only */
+@media (max-width: 768px) {
+    .footer-all-rights { display: none; }
+}
 
 /* Mobile / Tablet */
 @media (max-width: 1024px) { 
@@ -422,18 +453,18 @@ section {
     #main-nav.fixed-nav a.active { background: rgba(0, 102, 204, 0.2); color: #0066cc; }
 }
 @media (max-width: 768px) {
-    body { background: url('images/mobile_bkg.jpg') center/cover fixed; }
+    body { background: url('images/mobile_bkg.jpg') center center fixed; background-size: auto 100%; background-repeat: no-repeat; }
     #hero-section { height: 100vh; }
     /* Hero uses body's fixed background only – no separate layer, so no change when scrolling */
     #background-container { background: none; }
     /* Pfp directly in center; name towards bottom, full name visible */
     #hero-profile {
-        top: 50%;
+        top: 42%;
         left: 50%;
         transform: translate(-50%, -50%);
     }
     #name-display {
-        bottom: 14vh;
+        bottom: 22vh;
         left: 50%;
         transform: translateX(-50%);
         font-size: clamp(2.25rem, 9vw, 4rem);
@@ -487,4 +518,5 @@ section {
     .contact-card h2 { font-size: 1.75rem; }
     .projects-grid { grid-template-columns: 1fr; }
     #custom-scrollbar { display: none; }
+    .site-footer { padding-right: 2rem; }
 }

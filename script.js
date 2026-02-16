@@ -7,16 +7,19 @@ const App = {
         scrollThumb: document.getElementById('custom-scrollbar-thumb'),
         scrollbar: document.getElementById('custom-scrollbar'),
         hamburger: document.getElementById('mobile-menu-toggle'),
-        navLinks: document.querySelector('.nav-links')
+        navLinks: document.querySelector('.nav-links'),
+        footer: document.querySelector('.site-footer')
     },
 
     init() {
         if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
         window.scrollTo(0, 0);
-        
+        const yearEl = document.getElementById('copyright-year');
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
         this.animateName();
         this.setupEventListeners();
         this.handleResize();
+        this.updateFooterVisibility();
     },
 
     animateName() {
@@ -77,6 +80,17 @@ const App = {
         this.elems.scrollThumb.style.top = `${Math.min(Math.max(totalProg * 100, 0), 100 - thumbH)}%`;
         
         this.updateActiveLink();
+        this.updateFooterVisibility();
+    },
+
+    updateFooterVisibility() {
+        if (!this.elems.footer) return;
+        const scrollY = window.scrollY;
+        const heroH = this.elems.hero.offsetHeight;
+        const atEnd = scrollY + window.innerHeight >= document.documentElement.scrollHeight - 80;
+        const pastHero = scrollY > heroH - 10;
+        const show = this.isMobile ? atEnd : pastHero;
+        this.elems.footer.classList.toggle('footer-visible', show);
     },
 
     updateActiveLink() {
@@ -103,7 +117,8 @@ const App = {
             if (!tick) {
                 window.requestAnimationFrame(() => {
                     this.updateScroll();
-                    if(this.isMobile) this.updateActiveLink();
+                    if (this.isMobile) this.updateActiveLink();
+                    this.updateFooterVisibility();
                     tick = false;
                 });
                 tick = true;
@@ -157,6 +172,7 @@ const App = {
         } else {
             this.updateScroll();
         }
+        this.updateFooterVisibility();
     }
 };
 
