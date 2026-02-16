@@ -1,5 +1,7 @@
 const App = {
     isMobile: window.innerWidth <= 768,
+    currentProjectIndex: 1,
+    projectScrollTimeout: null,
     elems: {
         nav: document.getElementById('main-nav'),
         sections: document.querySelectorAll('section'),
@@ -8,7 +10,11 @@ const App = {
         scrollbar: document.getElementById('custom-scrollbar'),
         hamburger: document.getElementById('mobile-menu-toggle'),
         navLinks: document.querySelector('.nav-links'),
-        footer: document.querySelector('.site-footer')
+        footer: document.querySelector('.site-footer'),
+        projectsGrid: document.querySelector('.projects-grid'),
+        projectCards: null,
+        carouselPrev: document.querySelector('.carousel-prev'),
+        carouselNext: document.querySelector('.carousel-next')
     },
 
     init() {
@@ -163,6 +169,45 @@ const App = {
         });
 
         window.addEventListener('resize', () => this.handleResize());
+
+        // Projects Carousel with layered cards (disabled on mobile)
+        if (!this.isMobile && this.elems.carouselPrev && this.elems.carouselNext && this.elems.projectsGrid) {
+            this.elems.projectCards = this.elems.projectsGrid.querySelectorAll('.project-card');
+
+            // Infinite loop: modulo arithmetic wraps index from last to first (and vice versa)
+            this.elems.carouselPrev.addEventListener('click', () => {
+                this.currentProjectIndex = (this.currentProjectIndex - 1 + this.elems.projectCards.length) % this.elems.projectCards.length;
+                this.renderProjectCarousel();
+            });
+
+            this.elems.carouselNext.addEventListener('click', () => {
+                this.currentProjectIndex = (this.currentProjectIndex + 1) % this.elems.projectCards.length;
+                this.renderProjectCarousel();
+            });
+
+            setTimeout(() => this.renderProjectCarousel(), 100);
+        }
+    },
+
+    normalizeProjectOffset(offset, total) {
+        let normalized = ((offset % total) + total) % total;
+        if (normalized > total / 2) normalized -= total;
+        return normalized;
+    },
+
+    renderProjectCarousel() {
+        if (this.isMobile || !this.elems.projectCards || !this.elems.projectCards.length) return;
+        const total = this.elems.projectCards.length;
+
+        this.elems.projectCards.forEach((card, i) => {
+            const offset = this.normalizeProjectOffset(i - this.currentProjectIndex, total);
+            card.classList.remove('carousel-center', 'carousel-left', 'carousel-right', 'carousel-hidden');
+
+            if (offset === 0) card.classList.add('carousel-center');
+            else if (offset === -1) card.classList.add('carousel-left');
+            else if (offset === 1) card.classList.add('carousel-right');
+            else card.classList.add('carousel-hidden');
+        });
     },
 
     handleResize() {
@@ -171,6 +216,7 @@ const App = {
             this.elems.sections.forEach(s => { s.style.transform = ''; s.style.opacity = 1; s.style.pointerEvents = 'auto'; });
         } else {
             this.updateScroll();
+            this.renderProjectCarousel();
         }
         this.updateFooterVisibility();
     }
