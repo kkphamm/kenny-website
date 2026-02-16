@@ -33,7 +33,6 @@ body {
     transform-style: preserve-3d;
     will-change: transform;
     max-width: 100%;
-    box-sizing: border-box;
 }
 
 .glass-panel::before {
@@ -55,8 +54,6 @@ body {
     z-index: 2;
 }
 #hero-section { height: 100vh; display: flex; justify-content: center; align-items: center; position: relative; }
-#background-container { position: absolute; inset: 0; background: none; z-index: -2; }
-#content-overlay { position: absolute; inset: 0; background: transparent; z-index: -1; }
 
 /* Hero center layout – pfp centered on page, name at bottom */
 #hero-center {
@@ -164,16 +161,15 @@ body {
 #main-nav {
     position: absolute; top: 30px; left: 50%; transform: translate(-50%, -20px);
     padding: 16.5px 33px; border-radius: 50px; display: flex; gap: 11px; z-index: 1000;
-    background: var(--glass-low); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3);
+    background: var(--glass-med); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3);
     opacity: 0; transition: all 0.3s;
 }
 #main-nav.fixed-nav { position: fixed; top: 20px; background: var(--glass-med); transform: translate(-50%, 0); opacity: 1; }
 #main-nav a {
-    color: white; text-decoration: none; font-weight: 500; padding: 8.8px 22px; border-radius: 25px;
-    font-size: 1.1rem; transition: all 0.3s ease; opacity: 0; transform: translateY(-20px);
+    color: var(--text-sec); text-decoration: none; font-weight: 500; padding: 8.8px 22px; border-radius: 25px;
+    font-size: 1.1rem; transition: all 0.3s ease; opacity: 1; transform: none;
     position: relative;
 }
-#main-nav.fixed-nav a { color: var(--text-sec); opacity: 1; transform: none; }
 #main-nav a:hover { background: rgba(255,255,255,0.15); transform: scale(1.05); }
 #main-nav a.active {
     background: rgba(255,255,255,0.35);
@@ -231,8 +227,45 @@ section {
 #about .content-card { max-width: min(var(--bubble-max-width), var(--bubble-width)); }
 #about .content-card h2 { font-size: clamp(1.35rem, 3vw, 1.85rem); }
 #about .content-card h3 { font-size: clamp(1.1rem, 2.5vw, 1.5rem); }
-#about .content-card .bio { font-size: clamp(0.9rem, 1.9vw, 1rem); line-height: 1.5; }
+#about .content-card .bio { font-size: clamp(0.96rem, 2.05vw, 1.08rem); line-height: 1.5; }
 #experience .content-card { max-width: min(var(--bubble-max-width), var(--bubble-width)); }
+#about .content-card,
+#experience .content-card {
+    width: min(var(--bubble-max-width), var(--bubble-width));
+    aspect-ratio: 4.5 / 3;
+    overflow-y: auto;
+}
+#about .content-card h2,
+#experience .content-card h2 {
+    font-size: clamp(1.2rem, 2.25vw, 1.55rem);
+    margin-bottom: clamp(0.35rem, 0.8vw, 0.55rem);
+    line-height: 1.15;
+}
+#about .content-card h3,
+#experience .content-card h3 {
+    font-size: clamp(0.95rem, 1.8vw, 1.2rem);
+    margin-top: clamp(0.35rem, 0.9vw, 0.55rem);
+    margin-bottom: clamp(0.2rem, 0.6vw, 0.35rem);
+    line-height: 1.2;
+}
+#about .content-card p,
+#about .content-card .bio,
+#experience .content-card p,
+#experience .content-card li,
+#experience .content-card .company {
+    font-size: clamp(0.74rem, 1.35vw, 0.86rem);
+    line-height: 1.32;
+    margin-bottom: clamp(0.12rem, 0.45vw, 0.25rem);
+}
+#about .content-card .item,
+#experience .content-card .experience-detail {
+    margin-bottom: clamp(0.28rem, 0.8vw, 0.5rem);
+    padding-bottom: clamp(0.22rem, 0.7vw, 0.4rem);
+}
+#experience .content-card .experience-detail ul {
+    margin-left: clamp(0.85rem, 1.7vw, 1.1rem);
+    margin-top: clamp(0.2rem, 0.55vw, 0.32rem);
+}
 #experience .content-card h2 { font-size: clamp(1.5rem, 3.5vw, 2.1rem); }
 #experience .content-card h3 { font-size: clamp(1.1rem, 2.5vw, 1.5rem); }
 #experience .content-card p { font-size: clamp(0.85rem, 1.8vw, 0.95rem); }
@@ -290,6 +323,10 @@ section {
     transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.4s ease;
     /* If icons are too dark for your theme, uncomment line below */
     /* filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); */
+}
+
+#about .skill-item i {
+    font-size: clamp(1.55rem, 3.5vw, 2.2rem);
 }
 
 .skill-item span {
@@ -441,23 +478,135 @@ section {
     pointer-events: none;
 }
 
-.contact-container { width: 86%; max-width: min(var(--bubble-max-width), var(--bubble-width)); display: flex; flex-direction: column; gap: clamp(0.9rem, 1.6vw, 1.1rem); }
-.contact-card h2 { font-size: clamp(1.5rem, 3.5vw, 2rem); font-weight: 700; margin-bottom: clamp(0.75rem, 2vw, 1.5rem); color: var(--text-main); }
-.contact-info p { font-size: clamp(0.95rem, 2.2vw, 1.1rem); line-height: 1.7; margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem); color: var(--text-sec); }
-.contact-info a { color: #0066cc; text-decoration: none; transition: color 0.2s; }
-.contact-info a:hover { color: #004499; text-decoration: underline; }
-.social-card h3 { font-size: clamp(1.25rem, 3vw, 1.5rem); font-weight: 600; margin-bottom: clamp(0.5rem, 1.5vw, 1rem); color: var(--text-main); text-align: center; }
-.social-links { display: flex; justify-content: center; gap: clamp(2rem, 5vw, 2.5rem); margin-top: clamp(0.5rem, 1.5vw, 0.625rem); }
-.social-link { display: flex; flex-direction: column; align-items: center; color: var(--text-main); text-decoration: none; transition: 0.3s; outline: none; border: none; background: none; }
-.social-link:focus { outline: none; border: none; }
-.social-link svg { transition: all 0.3s ease; filter: drop-shadow(0 0 0 rgba(0, 102, 204, 0)); outline: none; border: none; }
-.social-link:hover { transform: none; box-shadow: none; outline: none; border: none; }
-.social-link:hover svg { 
-    filter: drop-shadow(0 0 8px rgba(0, 102, 204, 0.8)) drop-shadow(0 0 15px rgba(0, 102, 204, 0.6));
-    transform: scale(1.1);
-    outline: none;
+.contact-container {
+    width: 86%;
+    max-width: min(860px, 88vw);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(0.9rem, 1.8vw, 1.35rem);
+    align-items: stretch;
 }
-.social-link span { font-weight: 600; font-size: 1rem; margin-top: 0.5rem; }
+.contact-card,
+.social-card {
+    padding: clamp(1.1rem, 1.8vw, 1.5rem);
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+}
+.contact-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+.contact-card h2 {
+    font-size: clamp(1.4rem, 3vw, 1.85rem);
+    font-weight: 700;
+    margin-bottom: clamp(0.7rem, 1.5vw, 1rem);
+    color: var(--text-main);
+    text-align: center;
+}
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1rem, 2vw, 1.5rem);
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    color: var(--text-main);
+    padding: 0.5rem;
+    border-radius: 12px;
+}
+.contact-item:hover {
+    /* No background or transform on the container */
+}
+.contact-item .icon-box {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    color: var(--text-main);
+    flex-shrink: 0;
+}
+.contact-item:hover .icon-box {
+    /* No change on hover for icon box */
+}
+.contact-item span {
+    font-size: clamp(0.95rem, 2vw, 1.1rem);
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+.contact-item:hover span {
+    color: #0066cc;
+    transform: translateX(5px);
+    text-shadow: 0 0 1px rgba(0, 102, 204, 0.3);
+}
+
+.social-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.social-card h3 {
+    font-size: clamp(1.15rem, 2.4vw, 1.35rem);
+    font-weight: 700;
+    margin-bottom: clamp(0.7rem, 1.6vw, 0.95rem);
+    color: var(--text-main);
+    text-align: center;
+}
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: clamp(1.1rem, 3vw, 1.6rem);
+    margin-top: 0.2rem;
+    flex: 1;
+    align-items: center;
+}
+.social-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-main);
+    text-decoration: none;
+    transition: transform 0.25s ease, color 0.25s ease;
+    outline: none;
+    border: none;
+    background: none;
+}
+.social-link:focus { outline: none; border: none; }
+.social-link svg {
+    width: 48px;
+    height: 48px;
+    padding: 9px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    transition: all 0.25s ease;
+    filter: drop-shadow(0 0 0 rgba(0, 102, 204, 0));
+}
+.social-link:hover { transform: translateY(-2px); }
+.social-link:hover svg {
+    background: rgba(255, 255, 255, 0.75);
+    filter: drop-shadow(0 0 6px rgba(0, 102, 204, 0.5));
+}
+.social-link span {
+    font-weight: 600;
+    font-size: 0.98rem;
+    margin-top: 0.4rem;
+}
 
 /* Custom Scrollbar */
 #custom-scrollbar {
@@ -478,6 +627,7 @@ section {
     text-align: center;
     font-size: 0.9rem;
     color: rgba(255, 255, 255, 0.7);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
     z-index: 100;
     opacity: 0;
     visibility: hidden;
@@ -508,6 +658,15 @@ section {
     }
     .project-card h3 { font-size: 1.15rem; }
     .project-card p { font-size: 0.9rem; }
+    .contact-container {
+        max-width: min(720px, 92vw);
+        grid-template-columns: 1fr;
+    }
+    .contact-card,
+    .social-card {
+        aspect-ratio: auto;
+    }
+    .social-card { justify-content: flex-start; }
     .hamburger { display: flex; cursor: pointer; }
     .nav-links { display: none; flex-direction: column; position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); width: 90vw; max-width: 350px; background: var(--glass-high); border-radius: 15px; padding: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
     .nav-links.active { display: flex; }
@@ -533,7 +692,6 @@ section {
         position: fixed;
     }
     #main-nav.fixed-nav .hamburger span { background: #333; }
-    #main-nav.fixed-nav a { color: #333; }
     #main-nav.fixed-nav a.active { background: rgba(0, 102, 204, 0.2); color: #0066cc; }
 }
 @media (max-width: 768px) {
@@ -542,7 +700,7 @@ section {
         background-position: center top;
         background-size: auto 100dvh;
         background-repeat: no-repeat;
-        background-attachment: scroll;
+        background-attachment: fixed;
         min-height: 100dvh;
     }
     #hero-section { height: 100vh; }
@@ -592,7 +750,6 @@ section {
         top: 20px;
     }
     #main-nav.fixed-nav .hamburger span { background: #333; }
-    #main-nav.fixed-nav a { color: #333; }
     #main-nav.fixed-nav a.active { background: rgba(0, 102, 204, 0.2); color: #0066cc; }
     
     /* Stack Layout */
@@ -601,10 +758,39 @@ section {
     .content-card h2 { font-size: 2rem; }
     .content-card h3 { font-size: 1.5rem; }
     .content-card p, .content-card .bio { font-size: 1rem; line-height: 1.6; }
+    #about .content-card h2,
+    #experience .content-card h2 { font-size: 1.75rem; }
+    #about .content-card h3,
+    #experience .content-card h3 { font-size: 1.25rem; }
+    #about .content-card p,
+    #about .content-card .bio,
+    #experience .content-card p,
+    #experience .content-card li,
+    #experience .content-card .company {
+        font-size: 1rem;
+        line-height: 1.55;
+    }
+    #about .content-card,
+    #experience .content-card {
+        aspect-ratio: auto;
+        overflow-y: visible;
+    }
+    /* Unify container widths on mobile to fix off-center issues */
+    .content-card,
+    .projects-carousel-container,
+    .contact-container {
+        width: 100%;
+        max-width: 100%;
+    }
     .project-card { padding: 20px; min-height: 150px; }
     .project-card h3 { font-size: 1.1rem; }
     .project-card p { font-size: 0.9rem; }
     .contact-card h2 { font-size: 1.75rem; }
+    .contact-container {
+        width: 92%;
+        max-width: 92vw;
+        grid-template-columns: 1fr;
+    }
     /* Disable carousel on mobile - show as regular stacked grid */
     .projects-carousel-container {
         flex-direction: column;
