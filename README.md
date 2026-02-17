@@ -10,7 +10,6 @@ A modern, interactive portfolio featuring glassmorphism design and unique horizo
 ## Tech Stack
 - **Core**: HTML5, CSS3, Vanilla JavaScript.
 - **Design**: Flexbox, Grid, CSS Variables, Media Queries.
-- **Fonts**: Inter & Oswald (Google Fonts).
 
 ## Sections
 1. **Hero**: Animated introduction.
@@ -19,9 +18,5 @@ A modern, interactive portfolio featuring glassmorphism design and unique horizo
 4. **Experience**: Professional history.
 5. **Contact**: Social links and info.
 
-## Setup
-No build tools required. Simply open `index.html` in a modern browser.
-
 ## License
-Open source for educational use.
 Built by Kenny Pham.
