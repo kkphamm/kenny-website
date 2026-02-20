@@ -273,8 +273,7 @@ section {
 #experience .content-card li { font-size: clamp(0.85rem, 1.8vw, 0.95rem); line-height: 1.4; }
 .content-card.glass-panel { padding: var(--bubble-padding-y) var(--bubble-padding-x); }
 .content-card:hover,
-.contact-card:hover,
-.social-card:hover {
+.contact-card:hover {
     box-shadow: 0 12px 40px rgba(0,0,0,0.25), 
                 inset 0 2px 4px rgba(255,255,255,0.3),
                 0 0 30px rgba(0, 102, 204, 0.3); /* Highlight glow */
@@ -477,21 +476,19 @@ section {
     width: 86%;
     max-width: min(860px, 88vw);
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(0.9rem, 1.8vw, 1.35rem);
+    grid-template-columns: 1fr;
+    gap: 0;
     align-items: stretch;
 }
-.contact-card,
-.social-card {
+.contact-card {
     padding: clamp(1.1rem, 1.8vw, 1.5rem);
-    aspect-ratio: 1 / 1;
     display: flex;
     flex-direction: column;
 }
 .contact-card {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     text-align: center;
 }
@@ -502,19 +499,27 @@ section {
     color: var(--text-main);
     text-align: center;
 }
+.contact-card h3 {
+    font-size: clamp(1.4rem, 3vw, 1.85rem);
+    font-weight: 700;
+    margin-top: clamp(0.9rem, 2.2vw, 1.25rem);
+    margin-bottom: clamp(0.7rem, 1.6vw, 0.95rem);
+    color: var(--text-main);
+    text-align: center;
+}
 .contact-info {
     display: flex;
     flex-direction: column;
     gap: clamp(1rem, 2vw, 1.5rem);
     width: 100%;
-    align-items: stretch;
+    align-items: center;
     justify-content: center;
-    flex: 1;
+    flex: 0 0 auto;
 }
 .contact-item {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     gap: 1rem;
     text-decoration: none;
     color: var(--text-main);
@@ -522,10 +527,7 @@ section {
     border-radius: 16px;
     background: var(--glass-low);
     border: 1px solid rgba(255,255,255,0.1);
-    text-align: left;
-}
-.contact-item:hover {
-    /* No background or transform on the container */
+    text-align: center;
 }
 .contact-item .icon-box {
     width: 60px;
@@ -540,9 +542,6 @@ section {
     color: var(--text-main);
     flex-shrink: 0;
 }
-.contact-item:hover .icon-box {
-    /* No change on hover for icon box */
-}
 .contact-item span {
     font-size: clamp(1.05rem, 2.2vw, 1.25rem);
     font-weight: 500;
@@ -554,23 +553,11 @@ section {
     text-shadow: 0 0 1px rgba(0, 102, 204, 0.3);
 }
 
-.social-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-.social-card h3 {
-    font-size: clamp(1.4rem, 3vw, 1.85rem);
-    font-weight: 700;
-    margin-bottom: clamp(0.7rem, 1.6vw, 0.95rem);
-    color: var(--text-main);
-    text-align: center;
-}
 .social-links {
     display: flex;
     justify-content: center;
     gap: clamp(1.5rem, 4vw, 2rem);
-    margin-top: 0.5rem;
+    margin-top: 0;
     flex: 1;
     align-items: center;
 }
@@ -661,11 +648,10 @@ section {
         max-width: min(720px, 92vw);
         grid-template-columns: 1fr;
     }
-    .contact-card,
-    .social-card {
+    .contact-card {
         aspect-ratio: auto;
     }
-    .social-card { justify-content: flex-start; }
+    .contact-card { justify-content: flex-start; }
     .hamburger { display: flex; cursor: pointer; }
     .nav-links { display: none; flex-direction: column; position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); width: 90vw; max-width: 350px; background: var(--glass-high); border-radius: 15px; padding: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
     .nav-links.active { display: flex; }
@@ -915,15 +901,12 @@ section {
         margin: 0 auto !important;
         box-sizing: border-box;
     }
-    .contact-card,
-    .social-card {
-        aspect-ratio: auto;
+    .contact-card {
         padding: 1.5rem;
         width: 100%;
         box-sizing: border-box;
     }
     .contact-card h2 { font-size: 1.75rem; }
-    .social-card { justify-content: flex-start; }
     
     /* ===== UI ELEMENTS ===== */
     #custom-scrollbar { display: none; }
