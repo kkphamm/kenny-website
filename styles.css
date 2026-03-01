@@ -370,16 +370,17 @@ section {
 /* Projects carousel – 3 visible, center overlaps sides */
 .projects-carousel-container {
     position: relative;
-    max-width: min(1200px, 94vw);
+    max-width: min(1400px, 96vw);
     width: 95%;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: clamp(0.6rem, 1.2vw, 1rem);
+    gap: clamp(0.8rem, 1.6vw, 1.2rem);
 }
 .projects-grid { 
     position: relative;
-    flex: 1;
-    min-height: clamp(24rem, 35.5vw, 27rem);
+    width: 100%;
+    min-height: clamp(30rem, 45vw, 34rem);
     overflow: visible;
     padding: 20px 0;
 }
@@ -387,20 +388,46 @@ section {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: clamp(300px, 27.5vw, 355px);
-    min-width: 300px;
-    padding: clamp(1.45rem, 2.3vw, 1.75rem);
-    aspect-ratio: 4 / 5;
-    height: auto;
-    max-width: 100%;
-    overflow-y: auto;
+    width: clamp(620px, 60vw, 760px);
+    min-width: 620px;
+    height: clamp(300px, 38vh, 420px);
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0;
     pointer-events: none;
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.85);
     z-index: 1;
     transition: transform 0.45s ease, opacity 0.35s ease, box-shadow 0.35s ease, z-index 0.35s ease;
+}
+.project-bubble {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
+    padding: clamp(1rem, 1.45vw, 1.2rem);
+    overflow-y: auto;
+    border-radius: 20px 0 0 20px;
+}
+.project-bubble.glass-panel {
+    border-right: none;
+}
+.project-media {
+    width: auto;
+    height: 100%;
+    flex: 0 0 auto;
+    aspect-ratio: 1 / 1;
+    align-self: stretch;
+    border-radius: 0 14px 14px 0;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.25);
+}
+.project-media img,
+.project-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 .project-card.carousel-left,
 .project-card.carousel-right {
@@ -430,14 +457,14 @@ section {
     z-index: 1;
     transform: translate(-50%, -50%) scale(0.82);
 }
-.project-card h3 { font-size: clamp(1.1rem, 2.5vw, 1.25rem); font-weight: 700; margin-bottom: clamp(0.4rem, 1.2vw, 0.6rem); color: var(--text-main); line-height: 1.3; }
-.project-card .tech-stack { font-size: clamp(0.75rem, 1.8vw, 0.85rem); color: #666; font-style: italic; margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem); font-weight: 500; }
-.project-card p { font-size: clamp(0.85rem, 2vw, 0.95rem); line-height: 1.5; color: var(--text-sec); }
-.project-card p:last-child {
+.project-bubble h3 { font-size: clamp(1.1rem, 2.5vw, 1.25rem); font-weight: 700; margin-bottom: clamp(0.4rem, 1.2vw, 0.6rem); color: var(--text-main); line-height: 1.3; }
+.project-bubble .tech-stack { font-size: clamp(0.75rem, 1.8vw, 0.85rem); color: #666; font-style: italic; margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem); font-weight: 500; }
+.project-bubble p { font-size: clamp(0.85rem, 2vw, 0.95rem); line-height: 1.5; color: var(--text-sec); }
+.project-bubble p:last-of-type {
     margin-bottom: 0;
 }
-.project-card a { color: #0066cc; text-decoration: none; transition: color 0.2s; }
-.project-card a:hover { color: #004499; text-decoration: underline; }
+.project-bubble a { color: #0066cc; text-decoration: none; transition: color 0.2s; }
+.project-bubble a:hover { color: #004499; text-decoration: underline; }
 .project-card.carousel-center:hover { 
     box-shadow: 0 22px 50px rgba(0,0,0,0.38), 
                 inset 0 2px 4px rgba(255,255,255,0.3),
@@ -445,6 +472,12 @@ section {
     transform: translate(-50%, -50%) scale(1.02);
 }
 /* Carousel arrow buttons */
+.carousel-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+}
 .carousel-arrow {
     position: relative;
     width: 50px;
@@ -634,16 +667,16 @@ section {
 
 /* Mobile / Tablet */
 @media (max-width: 1024px) { 
-    .projects-grid { min-height: clamp(22rem, 50vw, 26.5rem); }
-    .project-card { width: min(320px, 40vw); min-width: 270px; padding: 20px; height: clamp(20rem, 46vw, 23rem); }
+    .projects-grid { min-height: clamp(27rem, 56vw, 32rem); }
+    .project-card { width: min(560px, 64vw); min-width: 500px; height: clamp(280px, 36vh, 360px); }
     .project-card.carousel-left { transform: translate(calc(-50% - 24%), -50%) scale(0.9) rotate(-3deg); }
     .project-card.carousel-right { transform: translate(calc(-50% + 24%), -50%) scale(0.9) rotate(3deg); }
     .carousel-arrow {
         width: 44px;
         height: 44px;
     }
-    .project-card h3 { font-size: 1.15rem; }
-    .project-card p { font-size: 0.9rem; }
+    .project-bubble h3 { font-size: 1.15rem; }
+    .project-bubble p { font-size: 0.9rem; }
     .contact-container {
         max-width: min(720px, 92vw);
         grid-template-columns: 1fr;
@@ -863,9 +896,10 @@ section {
         left: auto !important;
         width: 100% !important;
         max-width: 100% !important;
-        flex: none;
         min-width: auto !important;
-        padding: 1.5rem;
+        flex-direction: column !important;
+        flex: none;
+        padding: 0 !important;
         min-height: 150px;
         aspect-ratio: auto;
         scroll-snap-align: none;
@@ -873,14 +907,34 @@ section {
         opacity: 1 !important;
         transform: none !important;
         z-index: 1 !important;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.2) !important;
+        box-shadow: none !important;
         margin: 0 !important;
         overflow-x: hidden;
-        overflow-y: auto;
+        overflow-y: visible;
         box-sizing: border-box;
     }
-    .project-card h3 { font-size: 1.15rem; }
-    .project-card p { font-size: 0.95rem; }
+    .project-bubble {
+        width: 100% !important;
+        padding: 1.5rem !important;
+        border-radius: 20px !important;
+        overflow-y: auto;
+    }
+    .project-media {
+        width: 100% !important;
+        aspect-ratio: 1 / 1;
+        border-radius: 14px !important;
+        overflow: hidden;
+        align-self: stretch !important;
+    }
+    .project-media img,
+    .project-media video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .project-bubble h3 { font-size: 1.15rem; }
+    .project-bubble p { font-size: 0.95rem; }
     .project-card.carousel-center,
     .project-card.carousel-left,
     .project-card.carousel-right,

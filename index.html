@@ -122,34 +122,57 @@
 
         <section id="projects">
             <div class="projects-carousel-container">
-                <button class="carousel-arrow carousel-prev" aria-label="Previous projects">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                </button>
                 <div class="projects-grid">
-                    <div class="project-card glass-panel">
-                        <h3><a href="https://worldcraft-org.github.io/worldcraft.github.io/" target="_blank">WorldCraft</a></h3>
-                        <p class="tech-stack">Python, Nerfstudio, Semantic NeRF, Voxelization | Dec 2025</p>
-                        <p>Converted real-world scenes into Minecraft-ready worlds using Neural Radiance Fields and semantic segmentation, then integrated NeRF reconstructions into voxelization and export workflows.</p>
+                    <div class="project-card">
+                        <div class="project-bubble glass-panel">
+                            <h3><a href="https://worldcraft-org.github.io/worldcraft.github.io/" target="_blank">WorldCraft</a></h3>
+                            <p class="tech-stack">Python, Nerfstudio, Semantic NeRF, Voxelization | Dec 2025</p>
+                            <p>Converted real-world scenes into Minecraft-ready worlds using Neural Radiance Fields and semantic segmentation, then integrated NeRF reconstructions into voxelization and export workflows.</p>
+                        </div>
+                        <div class="project-media">
+                            <img src="images/worldcraft_demo.png" alt="WorldCraft demo" loading="lazy">
+                        </div>
                     </div>
-                    <div class="project-card glass-panel">
-                        <h3>Personal Portfolio Website (This Website!!)</h3>
-                        <p class="tech-stack">HTML5, CSS3, JavaScript, UI/UX | Dec 2025</p>
-                        <p>Built a fully responsive portfolio with a custom glassmorphism design system, advanced CSS animations, and an integrated AI chatbot trained on my professional background. Features deployment automation with custom DNS, SSL, and GitHub Actions CI/CD.</p>
+                    <div class="project-card">
+                        <div class="project-bubble glass-panel">
+                            <h3>Personal Portfolio Website (This Website!!)</h3>
+                            <p class="tech-stack">HTML5, CSS3, JavaScript, UI/UX | Dec 2025</p>
+                            <p>Built a fully responsive portfolio with a custom glassmorphism design system, advanced CSS animations, and an integrated AI chatbot trained on my professional background. Features deployment automation with custom DNS, SSL, and GitHub Actions CI/CD.</p>
+                        </div>
+                        <div class="project-media">
+                            <img src="images/portfolio_demo.png" alt="Portfolio website demo" loading="lazy">
+                        </div>
                     </div>
-                    <div class="project-card glass-panel">
-                        <h3><a href="https://devpost.com/software/jask" target="_blank">Jask - AI Interview Intelligence</a></h3>
-                        <p class="tech-stack">React, LiveKit, FastAPI, OpenAI | Oct 2025</p>
-                        <p>Developed a real-time AI interview assistant with low-latency WebRTC streaming, live feedback, and scalable asynchronous backend evaluation for concurrent interview sessions.</p>
+                    <div class="project-card">
+                        <div class="project-bubble glass-panel">
+                            <h3><a href="https://devpost.com/software/jask" target="_blank">Jask - AI Interview Intelligence</a></h3>
+                            <p class="tech-stack">React, LiveKit, FastAPI, OpenAI | Oct 2025</p>
+                            <p>Developed a real-time AI interview assistant with low-latency WebRTC streaming, live feedback, and scalable asynchronous backend evaluation for concurrent interview sessions.</p>
+                        </div>
+                        <div class="project-media">
+                            <img src="images/jask_demo.png" alt="Jask demo" loading="lazy">
+                        </div>
                     </div>
-                    <div class="project-card glass-panel">
-                        <h3>Hey Computer</h3>
-                        <p class="tech-stack">Python, OpenAI Whisper, Google Speech API, PyAudio | Feb 2025</p>
-                        <p>Engineered a multi-stage voice assistant pipeline for wake-word detection, high-accuracy transcription, and natural language command execution with low response latency.</p>
+                    <div class="project-card">
+                        <div class="project-bubble glass-panel">
+                            <h3><a href="https://github.com/kkphamm/spotify-bot" target="_blank">Spotify Bot (AI Music Assistant)</a></h3>
+                            <p class="tech-stack">FastAPI, Spotipy, OpenAI (Intent + Whisper), React, Electron, Tailwind, SQLAlchemy | 2026</p>
+                            <p>Built a voice + text assistant that controls Spotify with natural language by parsing user intent into actions (track/artist/playlist/mood) and starting playback on the active device. Includes Spotify OAuth, connected playlists for instant voice control (e.g., “Play My Chill Mix”), and a Windows desktop app with a global Ctrl+Shift+Space push-to-talk hotkey.</p>
+                            <p><a href="https://github.com/kkphamm/spotify-bot" target="_blank">GitHub Repository</a></p>
+                        </div>
+                        <div class="project-media">
+                            <img src="images/spotify_demo.gif" alt="Spotify Bot demo" loading="lazy">
+                        </div>
                     </div>
                 </div>
-            <button class="carousel-arrow carousel-next" aria-label="Next projects">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-            </button>
+                <div class="carousel-controls">
+                    <button class="carousel-arrow carousel-prev" aria-label="Previous projects">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    </button>
+                    <button class="carousel-arrow carousel-next" aria-label="Next projects">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </button>
+                </div>
             </div>
         </section>
 

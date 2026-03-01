@@ -56,13 +56,14 @@ const App = {
 
         const scrollY = window.scrollY;
         const heroH = this.elems.hero.offsetHeight;
+        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
         
         // Sticky Nav
         this.elems.nav.classList.toggle('fixed-nav', scrollY > heroH);
 
         // Horizontal Scroll Logic
-        const totalH = document.getElementById('main-content').offsetHeight - window.innerHeight;
-        const progress = Math.min(Math.max((scrollY - heroH) / (totalH - heroH), 0), 1);
+        const afterHero = Math.max(maxScroll - heroH, 1);
+        const progress = Math.min(Math.max((scrollY - heroH) / afterHero, 0), 1);
         
         // Sections Transition
         if (scrollY > heroH) {
@@ -80,9 +81,10 @@ const App = {
 
         // Update Scrollbar
         const thumbH = 100 / this.elems.sections.length;
-        const totalProg = scrollY / totalH;
+        const totalProg = maxScroll > 0 ? (scrollY / maxScroll) : 0;
+        const maxTop = 100 - thumbH;
         this.elems.scrollThumb.style.height = `${thumbH}%`;
-        this.elems.scrollThumb.style.top = `${Math.min(Math.max(totalProg * 100, 0), 100 - thumbH)}%`;
+        this.elems.scrollThumb.style.top = `${Math.min(Math.max(totalProg * maxTop, 0), maxTop)}%`;
         
         this.updateActiveLink();
         this.updateFooterVisibility();
@@ -140,7 +142,7 @@ const App = {
                     this.elems.hamburger.classList.remove('active');
                 } else {
                     const heroH = this.elems.hero.offsetHeight;
-                    const scrollable = document.getElementById('main-content').offsetHeight - window.innerHeight - heroH;
+                    const scrollable = (document.documentElement.scrollHeight - window.innerHeight) - heroH;
                     window.scrollTo({
                         top: heroH + ((i+1) / this.elems.sections.length * scrollable),
                         behavior: 'smooth'
@@ -163,8 +165,9 @@ const App = {
             if(!isDrag || this.isMobile) return;
             const rect = this.elems.scrollbar.getBoundingClientRect();
             const pct = (e.clientY - rect.top) / rect.height;
-            const totalH = document.getElementById('main-content').offsetHeight - window.innerHeight;
-            window.scrollTo(0, pct * totalH);
+            const heroH = this.elems.hero.offsetHeight;
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            window.scrollTo(0, pct * maxScroll);
         });
 
         window.addEventListener('resize', () => this.handleResize());
