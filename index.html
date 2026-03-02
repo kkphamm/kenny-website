@@ -6,10 +6,17 @@
     <meta name="theme-color" content="#1a1a2e">
     <title>Kenny - Portfolio</title>
     <link rel="icon" type="image/png" href="images/bonsai.png">
+    
+    <link rel="preload" href="images_webp/web_bkg.webp" as="image">
+    <link rel="preload" href="images_webp/pfp.webp" as="image">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"></noscript>
+    
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -27,7 +34,7 @@
             <div id="name-display"></div>
             <div id="hero-profile">
                 <div class="hero-profile-inner">
-                    <img src="images/pfp.png" alt="Portrait of Kenny Pham" width="220" height="220" loading="eager">
+                    <img src="images_webp/pfp.webp" alt="Portrait of Kenny Pham" width="220" height="220" loading="eager">
                 </div>
             </div>
         </div>
@@ -133,7 +140,7 @@
                             <p>Converted real-world scenes into Minecraft-ready worlds using Neural Radiance Fields and semantic segmentation, then integrated NeRF reconstructions into voxelization and export workflows.</p>
                         </div>
                         <div class="project-media">
-                            <img src="images/worldcraft_demo.png" alt="WorldCraft demo" loading="lazy">
+                            <img src="images_webp/worldcraft_demo.webp" alt="WorldCraft demo" loading="lazy" width="600" height="600" style="aspect-ratio: 1/1;">
                         </div>
                     </div>
                     <div class="project-card">
@@ -143,7 +150,7 @@
                             <p>Built a fully responsive portfolio with a custom glassmorphism design system, advanced CSS animations, and an integrated AI chatbot trained on my professional background. Features deployment automation with custom DNS, SSL, and GitHub Actions CI/CD.</p>
                         </div>
                         <div class="project-media">
-                            <img src="images/portfolio_demo.png" alt="Portfolio website demo" loading="lazy">
+                            <img src="images_webp/portfolio_demo.webp" alt="Portfolio website demo" loading="lazy" width="600" height="600" style="aspect-ratio: 1/1;">
                         </div>
                     </div>
                     <div class="project-card">
@@ -153,7 +160,7 @@
                             <p>Developed a real-time AI interview assistant with low-latency WebRTC streaming, live feedback, and scalable asynchronous backend evaluation for concurrent interview sessions.</p>
                         </div>
                         <div class="project-media">
-                            <img src="images/jask_demo.png" alt="Jask demo" loading="lazy">
+                            <img src="images_webp/jask_demo.webp" alt="Jask demo" loading="lazy" width="600" height="600" style="aspect-ratio: 1/1;">
                         </div>
                     </div>
                     <div class="project-card">
@@ -164,7 +171,7 @@
                             <p><a href="https://github.com/kkphamm/spotify-bot" target="_blank">GitHub Repository</a></p>
                         </div>
                         <div class="project-media">
-                            <img src="images/spotify_demo.gif" alt="Spotify Bot demo" loading="lazy">
+                            <img src="images/spotify_demo.gif" alt="Spotify Bot demo" loading="lazy" width="600" height="600" style="aspect-ratio: 1/1; object-fit: cover;">
                         </div>
                     </div>
                 </div>
@@ -234,11 +241,10 @@
     </footer>
 
     <div id="custom-scrollbar"><div id="custom-scrollbar-thumb"></div></div>
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
     
-    <!-- Zapier Chatbot -->
     <script>
-        // Reset chat history on page refresh
+        // Clear chat history
         try {
             const keysToRemove = [];
             for (let i = 0; i < localStorage.length; i++) {
@@ -249,8 +255,22 @@
             }
             keysToRemove.forEach(key => localStorage.removeItem(key));
         } catch(e) { console.log('Could not clear chat history'); }
+
+        // Inject Zapier 2.5 seconds AFTER the page is ready to ensure zero performance hit
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const script = document.createElement('script');
+                script.type = 'module';
+                script.async = true;
+                script.src = 'https://interfaces.zapier.com/assets/web-components/zapier-interfaces/zapier-interfaces.esm.js';
+                document.body.appendChild(script);
+
+                const bot = document.createElement('zapier-interfaces-chatbot-embed');
+                bot.setAttribute('is-popup', 'true');
+                bot.setAttribute('chatbot-id', 'cmlpsg65a0020j72qrrzh66ek');
+                document.body.appendChild(bot);
+            }, 2500);
+        });
     </script>
-    <script async type='module' src='https://interfaces.zapier.com/assets/web-components/zapier-interfaces/zapier-interfaces.esm.js'></script>
-    <zapier-interfaces-chatbot-embed is-popup='true' chatbot-id='cmlpsg65a0020j72qrrzh66ek'></zapier-interfaces-chatbot-embed>
 </body>
 </html>

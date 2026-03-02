@@ -1,0 +1,65 @@
+name: Optimize assets
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install optimization tools
+        run: |
+          npm install -g sharp-cli clean-css-cli terser
+
+      - name: Compress images (lossy but visually safe)
+        run: |
+          mkdir -p optimized-images images_webp
+          npx sharp images/**/*.png images/**/*.jpg images/**/*.jpeg --quality 80 --webp --output optimized-images/
+          # Copy existing webp if present (no change) 
+          if ls images_webp/**/*.webp 1> /dev/null 2>&1; then
+            cp images_webp/**/*.webp optimized-images/ || true
+          fi
+          cp -r optimized-images/* images_webp/ || true
+
+      - name: Minify CSS
+        run: |
+          if [ -f styles.css ]; then
+            cleancss -O2 styles.css -o styles.min.css
+          fi
+
+      - name: Minify JS
+        run: |
+          if [ -f script.js ]; then
+            terser script.js -c -m -o script.min.js
+          fi
+
+      - name: Commit optimized assets
+        env:
+          GIT_AUTHOR_NAME: github-actions
+          GIT_AUTHOR_EMAIL: github-actions@github.com
+          GIT_COMMITTER_NAME: github-actions
+          GIT_COMMITTER_EMAIL: github-actions@github.com
+        run: |
+          git status
+          if [ -n "$(git status --porcelain)" ]; then
+            git add images_webp styles.min.css script.min.js
+            git commit -m "chore: optimize images and minify assets"
+            git push
+          else
+            echo "No optimization changes to commit."
+          fi
+

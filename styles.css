@@ -15,7 +15,8 @@
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body {
     font-family: 'Inter', sans-serif; color: white; min-height: 100vh; overflow-x: hidden;
-    background: url('images/web_bkg.jpg') center/cover fixed;
+    /* Updated to webp */
+    background: url('images_webp/web_bkg.webp') center/cover fixed;
 }
 ::-webkit-scrollbar { display: none; }
 
@@ -777,7 +778,8 @@ section {
         position: relative;
     }
     body {
-        background-image: url('images/mobile_bkg.jpg');
+        /* Updated to webp */
+        background-image: url('images_webp/mobile_bkg.webp');
         background-position: center center;
         background-size: cover;
         background-repeat: no-repeat;
