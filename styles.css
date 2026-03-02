@@ -509,124 +509,175 @@ section {
 
 .contact-container {
     width: 86%;
-    max-width: min(860px, 88vw);
+    max-width: min(900px, 90vw);
     display: grid;
     grid-template-columns: 1fr;
-    gap: 0;
     align-items: stretch;
 }
 .contact-card {
-    padding: clamp(1.1rem, 1.8vw, 1.5rem);
+    padding: clamp(1.2rem, 2vw, 1.8rem);
     display: flex;
     flex-direction: column;
+    gap: clamp(1rem, 1.8vw, 1.4rem);
 }
 .contact-card {
+    justify-content: flex-start;
+    align-items: stretch;
+    text-align: left;
+}
+.contact-header {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    text-align: center;
+    gap: 0.45rem;
+}
+.contact-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-size: clamp(0.68rem, 1.2vw, 0.78rem);
+    font-weight: 700;
+    color: #0066cc;
+}
+.contact-intro {
+    font-size: clamp(0.9rem, 1.8vw, 1rem);
+    line-height: 1.45;
+    color: #333;
+    max-width: 62ch;
 }
 .contact-card h2 {
-    font-size: clamp(1.4rem, 3vw, 1.85rem);
+    font-size: clamp(1.5rem, 3vw, 2rem);
     font-weight: 700;
-    margin-bottom: clamp(0.7rem, 1.5vw, 1rem);
+    margin-bottom: 0.2rem;
     color: var(--text-main);
-    text-align: center;
+    text-align: left;
 }
 .contact-card h3 {
-    font-size: clamp(1.4rem, 3vw, 1.85rem);
-    font-weight: 700;
-    margin-top: clamp(0.9rem, 2.2vw, 1.25rem);
-    margin-bottom: clamp(0.7rem, 1.6vw, 0.95rem);
+    font-size: clamp(1.1rem, 2vw, 1.3rem);
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 0.2rem;
     color: var(--text-main);
-    text-align: center;
+    text-align: left;
 }
-.contact-info {
-    display: flex;
-    flex-direction: column;
-    gap: clamp(1rem, 2vw, 1.5rem);
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem;
     width: 100%;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 auto;
 }
 .contact-item {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 1rem;
+    justify-content: flex-start;
+    gap: 0.8rem;
     text-decoration: none;
     color: var(--text-main);
-    padding: 0.85rem 1rem;
+    padding: 0.9rem 0.95rem;
     border-radius: 16px;
-    background: var(--glass-low);
-    border: 1px solid rgba(255,255,255,0.1);
-    text-align: center;
+    background: rgba(255, 255, 255, 0.42);
+    border: 1px solid rgba(255,255,255,0.52);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.45);
+    text-align: left;
+    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 .contact-item .icon-box {
-    width: 60px;
-    height: 60px;
+    width: 46px;
+    height: 46px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: none;
-    border: none;
-    border-radius: 14px;
-    transition: all 0.3s ease;
+    background: rgba(255,255,255,0.68);
+    border: 1px solid rgba(255,255,255,0.85);
+    border-radius: 12px;
+    transition: all 0.25s ease;
     color: var(--text-main);
     flex-shrink: 0;
 }
-.contact-item span {
-    font-size: clamp(1.05rem, 2.2vw, 1.25rem);
-    font-weight: 500;
-    transition: all 0.3s ease;
+.contact-item-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
 }
-.contact-item:hover span {
+.contact-label {
+    font-size: clamp(0.7rem, 1.3vw, 0.78rem);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #5e6b7a;
+    font-weight: 700;
+}
+.contact-value {
+    font-size: clamp(0.86rem, 1.6vw, 0.95rem);
+    font-weight: 500;
+    transition: color 0.25s ease;
+    color: #222;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.contact-item:hover {
+    transform: translateY(-2px);
+    border-color: rgba(0, 102, 204, 0.35);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.55);
+}
+.contact-item:hover .contact-value {
     color: #0066cc;
-    transform: translateX(5px);
-    text-shadow: 0 0 1px rgba(0, 102, 204, 0.3);
+}
+.contact-item:hover .icon-box {
+    background: rgba(255,255,255,0.9);
+    border-color: rgba(0, 102, 204, 0.25);
 }
 
+.social-block {
+    border-top: 1px solid rgba(0,0,0,0.08);
+    padding-top: 0.8rem;
+}
 .social-links {
     display: flex;
-    justify-content: center;
-    gap: clamp(1.5rem, 4vw, 2rem);
+    justify-content: flex-start;
+    gap: clamp(0.8rem, 2vw, 1rem);
     margin-top: 0;
-    flex: 1;
     align-items: center;
+    flex-wrap: wrap;
 }
 .social-link {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
+    gap: 0.55rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 999px;
     color: var(--text-main);
     text-decoration: none;
-    transition: transform 0.25s ease, color 0.25s ease;
-    outline: none;
-    border: none;
-    background: none;
+    transition: transform 0.25s ease, color 0.25s ease, background 0.25s ease;
+    background: rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(255,255,255,0.4);
 }
-.social-link:focus { outline: none; border: none; }
+.social-link:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.28);
+}
 .social-link svg {
-    width: 58px;
-    height: 58px;
-    padding: 11px;
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.7);
     transition: all 0.25s ease;
     filter: drop-shadow(0 0 0 rgba(0, 102, 204, 0));
 }
-.social-link:hover { transform: translateY(-2px); }
+.social-link:hover {
+    transform: translateY(-2px);
+    background: rgba(255,255,255,0.62);
+}
 .social-link:hover svg {
-    background: rgba(255, 255, 255, 0.75);
+    background: rgba(255, 255, 255, 0.9);
     filter: drop-shadow(0 0 6px rgba(0, 102, 204, 0.5));
 }
 .social-link span {
     font-weight: 600;
-    font-size: 1.1rem;
-    margin-top: 0.6rem;
+    font-size: 0.9rem;
+    margin-top: 0;
 }
 
 /* Custom Scrollbar */
@@ -680,7 +731,7 @@ section {
     .project-bubble h3 { font-size: 1.15rem; }
     .project-bubble p { font-size: 0.9rem; }
     .contact-container {
-        max-width: min(720px, 92vw);
+        max-width: min(760px, 92vw);
         grid-template-columns: 1fr;
     }
     .contact-card {
@@ -957,12 +1008,45 @@ section {
         box-sizing: border-box;
     }
     .contact-card {
+        width: 90vw !important;
+        max-width: 90vw !important;
+        margin: 0 auto !important;
         padding: 1.5rem;
-        width: 100%;
         box-sizing: border-box;
+        text-align: center;
+        align-items: center;
     }
-    .contact-card h2 { font-size: 1.75rem; }
-    
+    .contact-card h2 {
+        text-align: center;
+        font-size: 1.7rem;
+    }
+    .contact-eyebrow,
+    .contact-intro {
+        text-align: center;
+    }
+    .contact-grid {
+        width: 100%;
+        grid-template-columns: 1fr;
+    }
+    .contact-item {
+        justify-content: flex-start;
+        width: 100%;
+    }
+    .social-block {
+        width: 100%;
+        padding-top: 1rem;
+    }
+    .contact-card h3 {
+        text-align: center;
+    }
+    .social-links {
+        width: 100%;
+        justify-content: center;
+    }
+    .social-link {
+        flex: 1 1 140px;
+        justify-content: center;
+    }
     /* ===== UI ELEMENTS ===== */
     #custom-scrollbar { display: none; }
     .site-footer { padding-right: 2rem; }
