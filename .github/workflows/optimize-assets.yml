@@ -23,7 +23,7 @@ jobs:
 
       - name: Install optimization tools
         run: |
-          npm install sharp glob clean-css-cli terser
+          npm install sharp glob
 
       - name: Compress images (lossy but visually safe)
         run: |
@@ -47,18 +47,6 @@ jobs:
           })().catch(e => { console.error(e); process.exit(1); });
           "
 
-      - name: Minify CSS
-        run: |
-          if [ -f styles.css ]; then
-            npx cleancss -O2 styles.css -o styles.min.css
-          fi
-
-      - name: Minify JS
-        run: |
-          if [ -f script.js ]; then
-            npx terser script.js -c -m -o script.min.js
-          fi
-
       - name: Commit optimized assets
         env:
           GIT_AUTHOR_NAME: github-actions
@@ -68,8 +56,8 @@ jobs:
         run: |
           git status
           if [ -n "$(git status --porcelain)" ]; then
-            git add images_webp styles.min.css script.min.js
-            git commit -m "chore: optimize images and minify assets"
+            git add images_webp
+            git commit -m "chore: optimize images"
             git push
           else
             echo "No optimization changes to commit."

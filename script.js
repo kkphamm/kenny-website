@@ -1,19 +1,10 @@
 const App = {
-    isMobile: window.innerWidth <= 768,
-    currentProjectIndex: 1,
     elems: {
-        nav: document.getElementById('main-nav'),
-        sections: document.querySelectorAll('section'),
+        logo: document.getElementById('site-logo'),
+        sideNavLinks: document.querySelector('.side-nav-links'),
+        thumb: document.querySelector('.side-nav-thumb'),
         hero: document.getElementById('hero-section'),
-        scrollThumb: document.getElementById('custom-scrollbar-thumb'),
-        scrollbar: document.getElementById('custom-scrollbar'),
         hamburger: document.getElementById('mobile-menu-toggle'),
-        navLinks: document.querySelector('.nav-links'),
-        footer: document.querySelector('.site-footer'),
-        projectsGrid: document.querySelector('.projects-grid'),
-        projectCards: null,
-        carouselPrev: document.querySelector('.carousel-prev'),
-        carouselNext: document.querySelector('.carousel-next')
     },
 
     init() {
@@ -23,204 +14,281 @@ const App = {
         if (yearEl) yearEl.textContent = new Date().getFullYear();
         this.animateName();
         this.setupEventListeners();
-        this.handleResize();
-        this.updateFooterVisibility();
+        this.initScrollReveal();
+        this.initActiveLinkObserver();
+        this.initProjectReveal();
+        this.initHeroCard();
+        this.initGlowSurfaces();
+        this.initMagnetic('.contact-resume, .social-link', 8);
+        this.moveThumb(document.querySelector('#side-nav a'));
     },
 
     animateName() {
         const container = document.getElementById('name-display');
-        const text = this.isMobile ? "Kenny\nPham" : "Kenny     Pham";
-        
-        container.innerHTML = '';
-        [...text].forEach((char, i) => {
-            if (char === '\n') container.appendChild(document.createElement('br'));
-            else {
-                const span = document.createElement('span');
-                span.textContent = char;
-                span.style.animation = `fallIn 0.84s ease-out ${i * 0.14}s forwards`;
-                container.appendChild(span);
-            }
-        });
+        const text = 'Kenny Pham';
 
-        // Nav animation follows name
-        setTimeout(() => {
-            this.elems.nav.style.animation = 'navFade 1s ease-out forwards';
-            this.elems.nav.querySelectorAll('a').forEach((a, i) => {
+        const letters = document.createElement('span');
+        letters.className = 'name-letters';
+        letters.setAttribute('aria-hidden', 'true');
+        [...text].forEach((char, i) => {
+            const span = document.createElement('span');
+            // NBSP: a plain space in an inline-block span collapses to nothing.
+            span.textContent = char === ' ' ? ' ' : char;
+            span.style.animation = `fallIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) ${i * 0.07}s forwards`;
+            letters.appendChild(span);
+        });
+        container.innerHTML = '';
+        container.appendChild(letters);
+
+        // Let the settled name sit for a beat before it swooshes into the
+        // corner logo, sit again for the same beat, then bring in the rest
+        // of the site.
+        const lettersSettleAt = text.length * 70 + 700;
+        const restBeat = 900;
+        setTimeout(() => this.swooshNameToLogo(restBeat), lettersSettleAt + restBeat);
+    },
+
+    // FLIP: the full name shrinks/flies from the hero into the corner logo's
+    // exact spot while fading out, timed against the logo fading/popping in
+    // there — reads as "Kenny Pham" becoming "KP", not two separate fades.
+    // The rest of the site (nav + business card) waits half a restBeat after
+    // the swoosh actually lands, so "KP" gets a short beat alone too.
+    swooshNameToLogo(restBeat) {
+        const name = document.getElementById('name-display');
+        const logo = this.elems.logo;
+
+        const revealRest = () => {
+            this.elems.sideNavLinks.classList.add('is-ready');
+            this.elems.sideNavLinks.querySelectorAll('a').forEach((a, i) => {
                 setTimeout(() => a.style.animation = 'fallIn 0.4s ease-out forwards', i * 100);
             });
-        }, text.length * 140 + 800);
-    },
+            setTimeout(() => this.animateHeroCard(), 200);
+        };
 
-    updateScroll() {
-        if (this.isMobile) return; // Native scroll for mobile
+        logo.classList.add('is-ready');
 
-        const scrollY = window.scrollY;
-        const heroH = this.elems.hero.offsetHeight;
-        const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-        
-        // Sticky Nav
-        this.elems.nav.classList.toggle('fixed-nav', scrollY > heroH);
-
-        // Horizontal Scroll Logic
-        const afterHero = Math.max(maxScroll - heroH, 1);
-        const progress = Math.min(Math.max((scrollY - heroH) / afterHero, 0), 1);
-        
-        // Sections Transition
-        if (scrollY > heroH) {
-            const width = window.innerWidth;
-            this.elems.sections.forEach((sec, i) => {
-                const offset = width + (i * width) - (progress * width * this.elems.sections.length);
-                sec.style.transform = `translateX(${offset}px) translateY(-50%)`;
-                const opacity = 1 - Math.abs(offset / width);
-                sec.style.opacity = Math.max(0, Math.min(1, opacity));
-                sec.style.pointerEvents = opacity > 0.1 ? 'auto' : 'none';
-            });
-        } else {
-            this.elems.sections.forEach(s => { s.style.transform = 'translateX(100vw) translateY(-50%)'; s.style.opacity = 0; });
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            name.classList.add('is-collapsed');
+            name.style.opacity = '0';
+            setTimeout(revealRest, restBeat / 2);
+            return;
         }
 
-        // Update Scrollbar
-        const thumbH = 100 / this.elems.sections.length;
-        const totalProg = maxScroll > 0 ? (scrollY / maxScroll) : 0;
-        const maxTop = 100 - thumbH;
-        this.elems.scrollThumb.style.height = `${thumbH}%`;
-        this.elems.scrollThumb.style.top = `${Math.min(Math.max(totalProg * maxTop, 0), maxTop)}%`;
-        
-        this.updateActiveLink();
-        this.updateFooterVisibility();
-    },
+        const from = name.getBoundingClientRect();
+        const to = logo.getBoundingClientRect();
+        const dx = (to.left + to.width / 2) - (from.left + from.width / 2);
+        const dy = (to.top + to.height / 2) - (from.top + from.height / 2);
+        // offsetHeight (layout-based, ignores the logo's own scale-in
+        // transform which is still mid-transition here) rather than the
+        // transformed getBoundingClientRect height, so the target size is
+        // the logo's true settled size, not a mid-transition snapshot.
+        const scale = Math.max(0.12, logo.offsetHeight / name.offsetHeight);
 
-    updateFooterVisibility() {
-        if (!this.elems.footer) return;
-        const scrollY = window.scrollY;
-        const heroH = this.elems.hero.offsetHeight;
-        const atEnd = scrollY + window.innerHeight >= document.documentElement.scrollHeight - 80;
-        const pastHero = scrollY > heroH - 10;
-        const show = this.isMobile ? atEnd : pastHero;
-        this.elems.footer.classList.toggle('footer-visible', show);
-    },
+        const fly = name.animate([
+            { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+            { transform: `translate(${dx}px, ${dy}px) scale(${scale})`, opacity: 0, offset: 0.85 },
+            { transform: `translate(${dx}px, ${dy}px) scale(${scale})`, opacity: 0 },
+        ], { duration: 1300, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' });
 
-    updateActiveLink() {
-        const centers = [];
-        this.elems.sections.forEach(sec => {
-            const rect = sec.getBoundingClientRect();
-            // Logic differs for mobile (vertical) vs desktop (horizontal)
-            const dist = this.isMobile 
-                ? Math.abs(rect.top) 
-                : Math.abs((rect.left + rect.width/2) - window.innerWidth/2);
-            centers.push({ id: sec.id, dist });
+        // Collapse the layout space only after the fly finishes (name is
+        // already invisible by then) — collapsing earlier would clip the
+        // still-flying, still-visible text via .name-letters' overflow:hidden.
+        fly.finished.then(() => {
+            name.classList.add('is-collapsed');
+            setTimeout(revealRest, restBeat / 2);
         });
-        
-        const active = centers.sort((a,b) => a.dist - b.dist)[0];
-        document.querySelectorAll('#main-nav a').forEach(a => {
-            a.classList.toggle('active', a.getAttribute('href') === `#${active.id}`);
+    },
+
+    // Motion (motion.dev) loaded on demand — the animation engine behind Motion
+    // Primitives — just for this one entrance. Falls back to a plain CSS fade
+    // if the CDN is unreachable, so the card never gets stuck invisible.
+    animateHeroCard() {
+        const card = document.getElementById('hero-card');
+        if (!card) return;
+        const fallback = () => { card.style.transition = 'opacity 0.4s ease'; card.style.opacity = '1'; };
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return fallback();
+
+        import('https://cdn.jsdelivr.net/npm/motion@11/+esm')
+            .then(({ animate }) => animate(
+                card,
+                { opacity: [0, 1], y: [24, 0], scale: [0.94, 1] },
+                { type: 'spring', stiffness: 260, damping: 22 }
+            ))
+            .catch(fallback);
+    },
+
+    // Fade-in-and-rise reveal as content scrolls into view. Skips straight to
+    // the final visible state under prefers-reduced-motion (this is the only
+    // place that needs to check it now that the scroll-hijack is gone).
+    initScrollReveal() {
+        const targets = Array.from(document.querySelectorAll('.reveal'));
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        if (reduced || !('IntersectionObserver' in window)) {
+            targets.forEach(el => el.classList.add('is-visible'));
+            return;
+        }
+
+        targets.forEach(el => {
+            const siblings = Array.from(el.parentElement.querySelectorAll(':scope > .reveal'));
+            const i = siblings.indexOf(el);
+            el.style.transitionDelay = `${Math.min(i, 8) * 50}ms`;
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.2 });
+
+        targets.forEach(el => observer.observe(el));
+    },
+
+    // Highlights the nav link for whichever section currently occupies the
+    // middle band of the viewport, and slides the rail thumb to match.
+    initActiveLinkObserver() {
+        const sections = document.querySelectorAll('#main-content section[id]');
+        const navLinks = document.querySelectorAll('#side-nav a');
+        if (!sections.length || !('IntersectionObserver' in window)) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    navLinks.forEach(a => {
+                        const active = a.getAttribute('href') === `#${entry.target.id}`;
+                        a.classList.toggle('active', active);
+                        if (active) this.moveThumb(a);
+                    });
+                }
+            });
+        }, { rootMargin: '-45% 0px -45% 0px', threshold: 0 });
+
+        sections.forEach(sec => observer.observe(sec));
+    },
+
+    moveThumb(link) {
+        if (!this.elems.thumb || !link) return;
+        this.elems.thumb.style.transform = `translateY(${link.offsetTop}px)`;
+        this.elems.thumb.style.height = `${link.offsetHeight}px`;
+    },
+
+    // Hero card: pointer-tracked tilt + sheen, and a flip to the details face.
+    initHeroCard() {
+        const card = document.getElementById('hero-card');
+        if (!card) return;
+
+        card.querySelectorAll('.hero-card-flip').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const flipped = card.classList.toggle('is-flipped');
+                card.querySelectorAll('.hero-card-flip').forEach(b => b.setAttribute('aria-expanded', String(flipped)));
+                (flipped ? card.querySelector('.hero-card-back') : card.querySelector('.hero-card-front'))
+                    .querySelector('.hero-card-flip').focus();
+            });
+        });
+
+        if (window.matchMedia('(hover: none)').matches ||
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        card.addEventListener('pointermove', (e) => {
+            const r = card.getBoundingClientRect();
+            const px = (e.clientX - r.left) / r.width;
+            const py = (e.clientY - r.top) / r.height;
+            card.classList.add('is-tilting');
+            card.style.setProperty('--tx', `${(px - 0.5) * 14}deg`);
+            card.style.setProperty('--ty', `${(0.5 - py) * 12}deg`);
+            card.style.setProperty('--mx', `${px * 100}%`);
+            card.style.setProperty('--my', `${py * 100}%`);
+            // Cast shadow falls away from the cursor, like light staying put
+            // while the card pivots toward it — reinforces the tilt as real
+            // physical rotation instead of a flat image skewing.
+            card.style.setProperty('--shadow-x', `${(0.5 - px) * 40}px`);
+            card.style.setProperty('--shadow-y', `${(0.5 - py) * 30}px`);
+        });
+        card.addEventListener('pointerleave', () => {
+            card.classList.remove('is-tilting');
+            card.style.setProperty('--tx', '0deg');
+            card.style.setProperty('--ty', '0deg');
+            card.style.setProperty('--shadow-x', '0px');
+            card.style.setProperty('--shadow-y', '0px');
+        });
+    },
+
+    // Same pointer-tracked --mx/--my sheen as the hero card (see initHeroCard),
+    // generalized to any .glow-surface element — Contact/Projects cards pick
+    // up the same premium-glass cue instead of a bespoke one-off effect.
+    initGlowSurfaces() {
+        if (window.matchMedia('(hover: none)').matches) return;
+        document.querySelectorAll('.glow-surface').forEach(el => {
+            el.addEventListener('pointermove', (e) => {
+                const r = el.getBoundingClientRect();
+                el.style.setProperty('--mx', `${((e.clientX - r.left) / r.width) * 100}%`);
+                el.style.setProperty('--my', `${((e.clientY - r.top) / r.height) * 100}%`);
+            });
+        });
+    },
+
+    // Motion Primitives' signature "magnetic" hover: the element nudges a
+    // few px toward the cursor and springs back on leave. Reuses the same
+    // on-demand Motion import as animateHeroCard (module is cached after
+    // the first import, so this is effectively free).
+    initMagnetic(selector, strength = 10) {
+        if (window.matchMedia('(hover: none)').matches ||
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        import('https://cdn.jsdelivr.net/npm/motion@11/+esm').then(({ animate }) => {
+            document.querySelectorAll(selector).forEach(el => {
+                el.addEventListener('pointermove', (e) => {
+                    const r = el.getBoundingClientRect();
+                    const x = (e.clientX - r.left - r.width / 2) / (r.width / 2);
+                    const y = (e.clientY - r.top - r.height / 2) / (r.height / 2);
+                    animate(el, { x: x * strength, y: y * strength }, { type: 'spring', stiffness: 300, damping: 20 });
+                });
+                el.addEventListener('pointerleave', () => {
+                    animate(el, { x: 0, y: 0 }, { type: 'spring', stiffness: 300, damping: 20 });
+                });
+            });
+        }).catch(() => {});
+    },
+
+    initProjectReveal() {
+        document.querySelectorAll('.project-tile').forEach(tile => {
+            const toggle = () => {
+                const expanded = tile.getAttribute('aria-expanded') === 'true';
+                tile.setAttribute('aria-expanded', String(!expanded));
+                tile.classList.toggle('is-revealed', !expanded);
+            };
+            tile.addEventListener('click', event => {
+                if (!event.target.closest('a')) toggle();
+            });
+            tile.addEventListener('keydown', event => {
+                if ((event.key === 'Enter' || event.key === ' ') && !event.target.closest('a')) {
+                    event.preventDefault();
+                    toggle();
+                }
+            });
         });
     },
 
     setupEventListeners() {
-        // Consolidated Scroll Listener
-        let tick = false;
-        window.addEventListener('scroll', () => {
-            if (!tick) {
-                window.requestAnimationFrame(() => {
-                    this.updateScroll();
-                    if (this.isMobile) this.updateActiveLink();
-                    this.updateFooterVisibility();
-                    tick = false;
-                });
-                tick = true;
-            }
-        });
-
-        // Navigation Clicks
-        document.querySelectorAll('#main-nav a').forEach((link, i) => {
+        document.querySelectorAll('#side-nav a').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                if (this.isMobile) {
-                    document.getElementById(link.getAttribute('href').substring(1)).scrollIntoView({behavior:'smooth'});
-                    this.elems.navLinks.classList.remove('active');
-                    this.elems.hamburger.classList.remove('active');
-                } else {
-                    const heroH = this.elems.hero.offsetHeight;
-                    const scrollable = (document.documentElement.scrollHeight - window.innerHeight) - heroH;
-                    window.scrollTo({
-                        top: heroH + ((i+1) / this.elems.sections.length * scrollable),
-                        behavior: 'smooth'
-                    });
-                }
+                const target = document.getElementById(link.getAttribute('href').substring(1));
+                target?.scrollIntoView({ behavior: 'smooth' });
+                this.elems.sideNavLinks.classList.remove('active');
+                this.elems.hamburger.classList.remove('active');
+                this.elems.hamburger.setAttribute('aria-expanded', 'false');
             });
         });
 
-        // Mobile Menu
         this.elems.hamburger.addEventListener('click', () => {
-            this.elems.hamburger.classList.toggle('active');
-            this.elems.navLinks.classList.toggle('active');
+            const isActive = this.elems.hamburger.classList.toggle('active');
+            this.elems.sideNavLinks.classList.toggle('active', isActive);
+            this.elems.hamburger.setAttribute('aria-expanded', String(isActive));
         });
-
-        // Scrollbar Dragging
-        let isDrag = false;
-        this.elems.scrollThumb.addEventListener('mousedown', () => isDrag = true);
-        document.addEventListener('mouseup', () => isDrag = false);
-        document.addEventListener('mousemove', (e) => {
-            if(!isDrag || this.isMobile) return;
-            const rect = this.elems.scrollbar.getBoundingClientRect();
-            const pct = (e.clientY - rect.top) / rect.height;
-            const heroH = this.elems.hero.offsetHeight;
-            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-            window.scrollTo(0, pct * maxScroll);
-        });
-
-        window.addEventListener('resize', () => this.handleResize());
-
-        // Projects Carousel with layered cards (disabled on mobile)
-        if (!this.isMobile && this.elems.carouselPrev && this.elems.carouselNext && this.elems.projectsGrid) {
-            this.elems.projectCards = this.elems.projectsGrid.querySelectorAll('.project-card');
-
-            // Infinite loop: modulo arithmetic wraps index from last to first (and vice versa)
-            this.elems.carouselPrev.addEventListener('click', () => {
-                this.currentProjectIndex = (this.currentProjectIndex - 1 + this.elems.projectCards.length) % this.elems.projectCards.length;
-                this.renderProjectCarousel();
-            });
-
-            this.elems.carouselNext.addEventListener('click', () => {
-                this.currentProjectIndex = (this.currentProjectIndex + 1) % this.elems.projectCards.length;
-                this.renderProjectCarousel();
-            });
-
-            setTimeout(() => this.renderProjectCarousel(), 100);
-        }
-    },
-
-    normalizeProjectOffset(offset, total) {
-        let normalized = ((offset % total) + total) % total;
-        if (normalized > total / 2) normalized -= total;
-        return normalized;
-    },
-
-    renderProjectCarousel() {
-        if (this.isMobile || !this.elems.projectCards || !this.elems.projectCards.length) return;
-        const total = this.elems.projectCards.length;
-
-        this.elems.projectCards.forEach((card, i) => {
-            const offset = this.normalizeProjectOffset(i - this.currentProjectIndex, total);
-            card.classList.remove('carousel-center', 'carousel-left', 'carousel-right', 'carousel-hidden');
-
-            if (offset === 0) card.classList.add('carousel-center');
-            else if (offset === -1) card.classList.add('carousel-left');
-            else if (offset === 1) card.classList.add('carousel-right');
-            else card.classList.add('carousel-hidden');
-        });
-    },
-
-    handleResize() {
-        this.isMobile = window.innerWidth <= 768;
-        if (this.isMobile) {
-            this.elems.sections.forEach(s => { s.style.transform = ''; s.style.opacity = 1; s.style.pointerEvents = 'auto'; });
-        } else {
-            this.updateScroll();
-            this.renderProjectCarousel();
-        }
-        this.updateFooterVisibility();
     }
 };
 
