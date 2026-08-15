@@ -54,9 +54,8 @@ jobs:
           GIT_COMMITTER_NAME: github-actions
           GIT_COMMITTER_EMAIL: github-actions@github.com
         run: |
-          git status
-          if [ -n "$(git status --porcelain)" ]; then
-            git add images_webp
+          git add images_webp
+          if ! git diff --cached --quiet -- images_webp; then
             git commit -m "chore: optimize images"
             git push
           else

@@ -31,6 +31,14 @@
     --radius-soft: 16px;
     --radius-pill: 999px;
 
+    /* --- Type system: Fredoka carries headlines/identity, Fraunces carries
+       taglines and longer editorial copy, Inter carries small UI labels.
+       The 'Hooey DEMO' logo mark (site logo + the hero name it swooshes
+       into) is intentionally outside this system. --- */
+    --font-headline: 'Fredoka', sans-serif;
+    --font-tagline: 'Fraunces', serif;
+    --font-label: 'Inter', sans-serif;
+
     /* --- Legacy glass system, kept only for the dormant .glass-panel class --- */
     --glass-high: rgba(255, 255, 255, 0.95);
     --blur: blur(20px) saturate(180%);
@@ -76,6 +84,9 @@
     #name-display { transition: none !important; }
     .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
     .project-tile-disclosure { transition: none !important; }
+    .project-tile-detail { transition: none !important; }
+    .hero-card-border-trail::before { animation: none !important; display: none !important; }
+    .hero-card.is-flipping { animation: none !important; }
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -97,18 +108,18 @@ html { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--text-pri
 }
 ::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--text-primary) 55%, transparent); background-clip: content-box; }
 body {
-    font-family: 'Gambetta', serif;
+    font-family: var(--font-tagline);
     color: var(--text-primary);
     background: var(--bg);
     min-height: 100vh;
 }
 
-/* General Sans Semibold for headings over Gambetta Regular body copy. */
+/* Fredoka Semibold for headings over Fraunces Regular body copy. */
 /* !important on weight: every actual heading selector below hardcodes its
-   own font-weight (mostly 700 from the old Fraunces system) at higher
-   specificity — this is a deliberate one-line override so "Semibold"
-   actually renders everywhere instead of getting shadowed piecemeal. */
-h1, h2, h3 { font-family: 'General Sans', sans-serif; font-weight: 600 !important; }
+   own font-weight (mostly a legacy 700) at higher specificity — this is a
+   deliberate one-line override so "Semibold" actually renders everywhere
+   instead of getting shadowed piecemeal. */
+h1, h2, h3 { font-family: var(--font-headline); font-weight: 600 !important; }
 
 :focus-visible {
     outline: 2px solid var(--accent);
@@ -185,7 +196,7 @@ h1, h2, h3 { font-family: 'General Sans', sans-serif; font-weight: 600 !importan
     display: grid;
     grid-template-rows: 1fr;
     transition: grid-template-rows 0.4s var(--ease-soft);
-    font: 400 clamp(3.25rem, 8vw, 7.5rem) 'Hooey DEMO', 'General Sans', sans-serif;
+    font: 400 clamp(3.25rem, 8vw, 7.5rem) 'Hooey DEMO', sans-serif;
     line-height: 1;
     max-width: 90vw;
 }
@@ -204,9 +215,11 @@ h1, h2, h3 { font-family: 'General Sans', sans-serif; font-weight: 600 !importan
 /* Hero business card — glass-on-photo, tilts toward the cursor (--tx/--ty set
    by script.js) and flips to a details face. Entrance animated by Motion. */
 .hero-card {
+    position: relative;
     width: min(640px, 92vw);
     perspective: 1100px;
     opacity: 0;
+    border-radius: var(--radius-soft);
 }
 .hero-card-inner {
     position: relative;
@@ -218,6 +231,59 @@ h1, h2, h3 { font-family: 'General Sans', sans-serif; font-weight: 600 !importan
 }
 .hero-card.is-flipped .hero-card-inner { --flip: 180deg; }
 .hero-card.is-tilting .hero-card-inner { transition: transform 0.12s linear; }
+
+/* Premium flip: layered on the *outer* .hero-card (not .hero-card-inner,
+   which stays untouched so the existing pointer-tilt transition keeps
+   working) so the rotate gets a lift-and-scale arc composed on top of it —
+   reads as a card being picked up and turned by hand, not a flat spin. */
+.hero-card.is-flipping { animation: hero-card-flip-lift 0.7s var(--ease-spring); }
+@keyframes hero-card-flip-lift {
+    0% { transform: translateY(0) scale(1); }
+    45% { transform: translateY(-14px) scale(1.035); }
+    100% { transform: translateY(0) scale(1); }
+}
+
+/* Motion Primitives "Border Trail" — a metallic silver line that sweeps
+   around the card's edge. A conic-gradient, masked down to just the border
+   band (padding-box cut out of the full box via mask-composite), so it reads
+   as a bright segment tracing the frame rather than a shape floating on top
+   of it. Lives as the last child *inside* .hero-card-inner (grid-area: 1/1,
+   same stacked cell as the faces/edges) so it shares that element's 3D
+   transform and tilts/flips with the card instead of sitting flat over it.
+   Gated on mask-composite support; unsupported browsers simply show no
+   border (no static fallback ring — the card's own edge is enough). */
+.hero-card-border-trail {
+    grid-area: 1 / 1;
+    position: relative;
+    z-index: 5;
+    pointer-events: none;
+    border-radius: var(--radius-soft);
+    padding: 1px;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    display: none;
+}
+@supports ((-webkit-mask-composite: xor) or (mask-composite: exclude)) {
+    .hero-card-border-trail { display: block; }
+}
+.hero-card-border-trail::before {
+    content: '';
+    position: absolute;
+    inset: -60%;
+    background: conic-gradient(from 0deg,
+        transparent 0deg,
+        transparent 260deg,
+        rgba(210, 212, 220, 0.85) 300deg,
+        #fff 322deg,
+        rgba(210, 212, 220, 0.85) 344deg,
+        transparent 360deg);
+    animation: hero-card-trail 10s linear infinite;
+}
+@keyframes hero-card-trail {
+    to { transform: rotate(360deg); }
+}
 
 /* A solid slab sitting just behind each face in the same preserve-3d space
    (see .hero-card-inner) — as the card rotates, a sliver of it peeks out
@@ -314,16 +380,17 @@ h1, h2, h3 { font-family: 'General Sans', sans-serif; font-weight: 600 !importan
     gap: var(--sp-3);
 }
 .hero-card-info { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-.hero-card-name { font: 700 1.95rem 'General Sans', sans-serif; color: #fff; letter-spacing: -0.01em; }
+.hero-card-name { font: 700 1.95rem var(--font-tagline); color: #fff; letter-spacing: -0.01em; }
 .hero-card-role {
-    font: 600 0.9rem 'General Sans', sans-serif; color: #fff;
+    font: 600 0.9rem var(--font-label); color: #fff;
     text-transform: uppercase; letter-spacing: 0.08em;
     text-shadow: 0 1px 3px rgba(0,0,0,0.45);
 }
-.hero-card-line { font-size: 1.15rem; line-height: 1.5; color: rgba(255,255,255,0.82); }
+.hero-card-line { font-family: var(--font-tagline); font-size: 1.15rem; line-height: 1.5; color: rgba(255,255,255,0.82); }
 .hero-card-front .hero-card-line { color: rgba(255,255,255,0.76); font-weight: 400; }
-.hero-card-chat { font-size: 1.1rem; line-height: 1.4; color: #fff; font-weight: 500; }
+.hero-card-chat { font-family: var(--font-tagline); font-size: 1.1rem; line-height: 1.4; color: #fff; font-weight: 500; }
 .hero-card-eyebrow {
+    font-family: var(--font-label);
     font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
     color: rgba(255,255,255,0.5);
 }
@@ -432,7 +499,7 @@ h1, h2, h3 { font-family: 'General Sans', sans-serif; font-weight: 600 !importan
 #site-logo {
     position: fixed; top: var(--sp-4); left: var(--sp-4); z-index: 1000;
     display: flex; align-items: baseline;
-    font: 400 2.4rem 'Hooey DEMO', 'General Sans', sans-serif;
+    font: 400 calc(2.4rem + 3px) 'Hooey DEMO', sans-serif;
     letter-spacing: 0.01em;
     color: rgba(255,255,255,0.95);
     text-decoration: none;
@@ -453,32 +520,38 @@ h1, h2, h3 { font-family: 'General Sans', sans-serif; font-weight: 600 !importan
 #site-logo .logo-fill-inner { overflow: hidden; white-space: pre; min-width: 0; }
 #site-logo:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
-/* ============ Navigation — left rail, one glass treatment, no WebGL/JS-dependent states ============ */
+/* ============ Navigation — top-right, plain text (no pill container). The
+   rail/thumb pair from the old vertical layout is repurposed into an
+   "animated tabs" hover indicator: a soft-cornered (not stadium/pill)
+   highlight that slides beneath whichever link is hovered, and snaps back to
+   whichever section is in view otherwise — see moveThumb() in script.js. ============ */
 #side-nav {
-    position: fixed; left: var(--sp-4); top: 50%; transform: translateY(-50%);
+    position: fixed; top: var(--sp-4); right: var(--sp-4); left: auto; transform: none;
     z-index: 1000;
 }
 .side-nav-links {
     position: relative;
-    display: flex; flex-direction: column;
-    padding-left: var(--sp-4);
+    display: flex; flex-direction: row; align-items: center;
     opacity: 0; transition: opacity 0.3s var(--ease-soft);
 }
 .side-nav-links.is-ready { opacity: 1; }
 .side-nav-rail {
-    position: absolute; left: 0; top: 0; bottom: 0; width: 1px;
-    background: rgba(255,255,255,0.18);
+    position: absolute; inset: 0;
+    pointer-events: none;
 }
 .side-nav-thumb {
-    position: absolute; left: -1px; width: 3px; height: 20px; top: 0;
-    border-radius: 2px;
-    background: #fff;
-    box-shadow: 0 0 10px rgba(255,255,255,0.45);
-    transition: transform 0.35s var(--ease-soft), height 0.25s var(--ease-soft);
+    position: absolute; left: 0; top: 0; bottom: 0; width: 0;
+    border-radius: 8px;
+    background: color-mix(in srgb, #fff 14%, transparent);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18);
+    opacity: 0;
+    transition: transform 0.35s var(--ease-soft), width 0.35s var(--ease-soft), opacity 0.2s ease;
 }
+.side-nav-thumb.is-visible { opacity: 1; }
 #side-nav a {
+    position: relative; z-index: 1;
     display: block;
-    padding: 11px 0;
+    padding: 10px 16px;
     color: rgba(255,255,255,0.55); text-decoration: none; font-weight: 400;
     font-size: 0.95rem; letter-spacing: 0.01em;
     text-shadow: 0 1px 6px rgba(0,0,0,0.35);
@@ -515,52 +588,176 @@ section {
 
 /* Content Specifics */
 .content-card { max-width: min(var(--bubble-max-width), var(--bubble-width)); width: 86%; }
-#about .content-card { max-width: min(var(--bubble-max-width), var(--bubble-width)); }
-#about .content-card h2 { font-size: clamp(1.35rem, 3vw, 1.85rem); }
-#about .content-card h3 { font-size: clamp(1.1rem, 2.5vw, 1.5rem); }
-#about .content-card .bio { font-size: clamp(0.96rem, 2.05vw, 1.08rem); line-height: 1.5; }
-#experience .content-card { max-width: min(var(--bubble-max-width), var(--bubble-width)); }
-#about .content-card,
-#experience .content-card {
-    width: min(var(--bubble-max-width), var(--bubble-width));
-    padding: clamp(1.4rem, 2.5vw, 2rem) clamp(1.6rem, 3vw, 2.4rem);
+
+/* ============ About / Experience — shared timeline vocabulary ============
+   Both sections replace the old single-card-with-dividers layout with
+   distinct componentized pieces (intro, education timeline, filterable
+   skill chips; experience timeline of disclosure cards) so content gets
+   real hierarchy instead of one undifferentiated block. */
+#about .section-inner,
+#experience .section-inner {
+    max-width: 880px;
 }
-#about .content-card h2,
-#experience .content-card h2 {
-    font-size: clamp(1.35rem, 2.5vw, 1.65rem);
-    margin-bottom: clamp(0.65rem, 1.4vw, 1rem);
-    line-height: 1.2;
+.about-intro { margin: 0 auto var(--sp-5); }
+.about-intro .bio { margin-bottom: 0; }
+.about-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+    gap: var(--sp-4);
+    /* stretch (the grid default) so Education and Technical Skills always
+       match height regardless of how many entries/chips each holds. */
+    align-items: stretch;
 }
-#about .content-card h3,
-#experience .content-card h3 {
-    font-size: clamp(1rem, 2vw, 1.25rem);
-    margin-top: clamp(0.85rem, 1.8vw, 1.2rem);
-    margin-bottom: clamp(0.35rem, 0.8vw, 0.55rem);
-    line-height: 1.25;
+.about-education,
+.about-skills { width: 100%; max-width: none; }
+.about-education h3,
+.about-skills h3 { margin-top: 0; }
+
+/* Timeline: a connecting line + node per entry. Shared by About's education
+   list and Experience's role list so the two sections read as siblings. */
+.timeline { list-style: none; margin: 0; padding: 0; position: relative; }
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 5px; top: 6px; bottom: 6px;
+    width: 2px;
+    background: var(--border);
 }
-#about .content-card p,
-#about .content-card .bio,
-#experience .content-card p,
-#experience .content-card li,
-#experience .content-card .company {
-    font-size: clamp(0.82rem, 1.5vw, 0.94rem);
-    line-height: 1.5;
-    margin-bottom: clamp(0.2rem, 0.5vw, 0.35rem);
+.timeline-item { position: relative; padding-left: 28px; }
+.timeline-item:not(:last-child) { margin-bottom: var(--sp-4); }
+.timeline-node {
+    position: absolute; left: 0; top: 4px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--bg-elevated);
+    border: 2px solid var(--border);
+    box-sizing: border-box;
 }
-#about .content-card .item,
-#experience .content-card .experience-detail {
-    margin-bottom: clamp(0.7rem, 1.5vw, 1.1rem);
-    padding-bottom: clamp(0.55rem, 1.2vw, 0.85rem);
+.timeline-node.is-current {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent);
+    animation: timeline-pulse 2.4s ease-in-out infinite;
 }
-#experience .content-card .experience-detail ul {
-    margin-left: clamp(1rem, 2vw, 1.3rem);
-    margin-top: clamp(0.3rem, 0.7vw, 0.5rem);
+@keyframes timeline-pulse {
+    0%, 100% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent); }
+    50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--accent) 8%, transparent); }
 }
-#experience .content-card h2 { font-size: clamp(1.5rem, 3.5vw, 2.1rem); }
-#experience .content-card h3 { font-size: clamp(1.1rem, 2.5vw, 1.5rem); }
-#experience .content-card p { font-size: clamp(0.85rem, 1.8vw, 0.95rem); }
-#experience .content-card .company { font-size: clamp(0.85rem, 1.8vw, 0.95rem); }
-#experience .content-card li { font-size: clamp(0.85rem, 1.8vw, 0.95rem); line-height: 1.4; }
+.timeline-content strong { display: block; font-family: var(--font-headline); font-size: clamp(1.05rem, 2.2vw, 1.2rem); font-weight: 600; color: var(--text-primary); margin-bottom: 0.2rem; }
+.timeline-date { display: block; font-family: var(--font-label); font-size: clamp(0.8rem, 1.6vw, 0.88rem); color: var(--text-secondary); font-style: italic; margin-bottom: 0.3rem; }
+.timeline-content p { margin: 0; font-size: clamp(0.9rem, 1.8vw, 0.98rem); }
+
+/* Skills filter tabs — the exact non-pill animated-hover-highlight mechanism
+   built for the top-right nav (.side-nav-thumb / moveThumb in script.js),
+   reapplied here via initFilterTabs() so both tab controls share one
+   interaction pattern instead of two bespoke ones. */
+.skills-filter {
+    position: relative;
+    display: flex; flex-wrap: wrap; gap: 2px;
+    margin: 0.75rem 0 1.1rem;
+}
+.skills-filter-rail { position: absolute; inset: 0; pointer-events: none; }
+.skills-filter-thumb {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 0;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent);
+    opacity: 0;
+    transition: transform 0.35s var(--ease-soft), width 0.35s var(--ease-soft), opacity 0.2s ease;
+}
+.skills-filter-thumb.is-visible { opacity: 1; }
+.skills-filter button {
+    position: relative; z-index: 1;
+    font-family: var(--font-label);
+    font-size: 0.85rem; font-weight: 500;
+    color: var(--text-secondary);
+    background: none; border: none; cursor: pointer;
+    padding: 7px 13px;
+    transition: color 0.2s ease;
+}
+.skills-filter button:hover { color: var(--text-primary); }
+.skills-filter button.is-active { color: var(--text-primary); font-weight: 600; }
+.skills-filter button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+.skills-grid { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.skill-chip {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--text-primary) 5%, transparent);
+    border: 1px solid var(--border);
+    transition: transform 0.3s var(--ease-spring), background 0.2s ease, opacity 0.25s ease, box-shadow 0.25s ease;
+}
+.skill-chip.is-hidden { display: none; }
+.skill-chip i { font-size: 1.15rem; flex-shrink: 0; }
+.skill-chip span { font-family: var(--font-label); font-size: 0.85rem; font-weight: 500; color: var(--text-secondary); }
+.skill-chip:hover {
+    transform: translateY(-2px);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    box-shadow: var(--shadow-card);
+}
+
+/* Experience: each role is a disclosure card (same grid-rows 0fr->1fr spring
+   pattern as the project tiles, see .project-tile-disclosure) sitting on a
+   timeline node — current roles pulse via .timeline-node.is-current above. */
+.experience-timeline .timeline-item { padding-left: 32px; }
+.experience-timeline .timeline-node { top: 26px; }
+.exp-card {
+    border-radius: var(--radius-soft);
+    overflow: hidden;
+    background: var(--card-glass-bg);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid var(--card-glass-border);
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.3s var(--ease-soft);
+}
+.exp-card-toggle {
+    display: flex; align-items: center; gap: var(--sp-3);
+    width: 100%;
+    background: none; border: none; cursor: pointer;
+    font: inherit; text-align: left; color: inherit;
+    padding: clamp(1rem, 2vw, 1.4rem) clamp(1.2rem, 2.5vw, 1.7rem);
+}
+.exp-card-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.exp-logo { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex-shrink: 0; background: #fff; }
+.exp-card-heading { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.25rem; }
+.exp-card-heading h3 { margin: 0; font-size: clamp(1rem, 2vw, 1.15rem); font-weight: 600; color: var(--text-primary); }
+.exp-company { font-family: var(--font-label); font-size: clamp(0.8rem, 1.6vw, 0.88rem); color: var(--text-secondary); }
+.exp-chevron { flex-shrink: 0; color: var(--text-secondary); transition: transform 0.3s var(--ease-soft); }
+.exp-card.is-open .exp-chevron { transform: rotate(180deg); }
+
+.exp-card-disclosure {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.32s var(--ease-spring);
+}
+.exp-card.is-open .exp-card-disclosure { grid-template-rows: 1fr; }
+.exp-card-disclosure-inner { overflow: hidden; }
+.exp-card-disclosure-inner ul {
+    margin: 0; padding: 0 clamp(1.2rem, 2.5vw, 1.7rem) clamp(1rem, 2vw, 1.4rem);
+    padding-left: calc(clamp(1.2rem, 2.5vw, 1.7rem) + 1.1rem);
+    border-top: 1px solid var(--border);
+    padding-top: 0.85rem;
+    margin-top: -0.15rem;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 0.28s var(--ease-soft), transform 0.32s var(--ease-soft);
+}
+.exp-card.is-open .exp-card-disclosure-inner ul { opacity: 1; transform: translateY(0); transition-delay: 0.05s; }
+.exp-card-disclosure-inner li { font-size: clamp(0.88rem, 1.8vw, 0.95rem); line-height: 1.5; color: var(--text-secondary); margin-bottom: 0.3rem; }
+.exp-card-disclosure-inner li:last-child { margin-bottom: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+    .timeline-node.is-current { animation: none; }
+    .exp-card-disclosure,
+    .exp-card-disclosure-inner ul,
+    .exp-chevron { transition: none; }
+}
+
+@media (max-width: 768px) {
+    .about-grid { grid-template-columns: 1fr; }
+}
 
 /* Glass surface for content/contact cards — same blur+saturate recipe as
    .hero-card-face, using theme-aware translucent tokens so text contrast
@@ -582,69 +779,18 @@ section {
 .content-card h3 { font-size: clamp(1.25rem, 3vw, 1.75rem); font-weight: 600; margin-top: clamp(0.75rem, 2vw, 1.5rem); margin-bottom: clamp(0.4rem, 1.2vw, 0.75rem); color: var(--text-primary); line-height: 1.3; }
 .content-card p { font-size: clamp(0.95rem, 2vw, 1.1rem); line-height: 1.5; margin-bottom: clamp(0.4rem, 1.2vw, 0.75rem); color: var(--text-secondary); }
 .content-card .bio { font-size: clamp(1rem, 2.2vw, 1.15rem); line-height: 1.6; margin-bottom: clamp(0.5rem, 1.5vw, 1rem); }
-.content-card .item { margin-bottom: clamp(0.5rem, 1.5vw, 1rem); padding-bottom: clamp(0.4rem, 1.2vw, 0.75rem); border-bottom: 1px solid var(--border); }
-.content-card .item:last-child { border-bottom: none; }
-.content-card .item strong { display: block; font-size: clamp(1.1rem, 2.5vw, 1.3rem); font-weight: 600; color: var(--text-primary); margin-bottom: clamp(0.2rem, 0.8vw, 0.4rem); }
-.content-card .item .date { display: block; font-size: clamp(0.85rem, 1.8vw, 0.95rem); color: var(--text-secondary); font-style: italic; margin-bottom: clamp(0.2rem, 0.8vw, 0.4rem); }
-.content-card .item p { margin-top: clamp(0.2rem, 0.8vw, 0.4rem); }
-.content-card .experience-detail { margin-bottom: clamp(0.75rem, 2vw, 1.5rem); padding-bottom: clamp(0.5rem, 1.5vw, 1rem); border-bottom: 1px solid var(--border); }
-.content-card .experience-detail:last-child { border-bottom: none; }
-.content-card .experience-detail h3 { margin-top: 0; }
-.content-card .exp-header { display: flex; align-items: center; gap: clamp(0.6rem, 1.5vw, 1rem); margin-bottom: clamp(0.25rem, 0.6vw, 0.4rem); }
-.content-card .exp-header > div { flex: 1; }
-.content-card .exp-header h3 { margin-bottom: 0; }
-.content-card .exp-logo { width: auto; height: clamp(36px, 5vw, 52px); border-radius: var(--radius-soft); object-fit: contain; flex-shrink: 0; }
-.content-card .experience-detail .company { font-weight: 600; color: var(--text-secondary); margin-bottom: clamp(0.4rem, 1.2vw, 0.6rem); }
-.content-card .experience-detail ul { margin-left: clamp(1rem, 2.5vw, 1.5rem); margin-top: clamp(0.4rem, 1.2vw, 0.6rem); }
-.content-card .experience-detail li { line-height: 1.4; margin-bottom: clamp(0.2rem, 0.8vw, 0.4rem); }
 .content-card a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
 .content-card a:hover { color: var(--accent-hover); text-decoration: underline; }
-
-/* Skills Grid Styles */
-.skills-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    gap: clamp(1rem, 3vw, 1.5rem);
-    margin-top: clamp(0.5rem, 1.5vw, 1rem);
-    padding-top: clamp(0.4rem, 1.2vw, 0.75rem);
-    border-top: 1px solid var(--border);
-}
-.skill-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: clamp(0.4rem, 1.5vw, 0.5rem);
-    transition: transform 0.4s var(--ease-spring);
-    cursor: default;
-}
-.skill-item i {
-    font-size: clamp(2rem, 5vw, 3rem);
-    transition: transform 0.4s var(--ease-spring), filter 0.4s ease;
-}
-#about .skill-item i { font-size: clamp(1.55rem, 3.5vw, 2.2rem); }
-.skill-item span {
-    font-size: clamp(0.75rem, 1.5vw, 0.85rem);
-    font-weight: 500;
-    color: var(--text-secondary);
-    opacity: 0;
-    transform: translateY(-5px);
-    transition: all 0.3s ease;
-}
-.skill-item:hover { transform: scale(1.2) translateY(-10px); }
-.skill-item:hover i { transform: rotate(10deg); filter: drop-shadow(0 5px 15px rgba(0, 102, 204, 0.4)); }
-.skill-item:hover span { opacity: 1; transform: translateY(0); }
-
-@media (max-width: 768px) {
-    .skills-wrapper { gap: 15px; justify-content: center; }
-    .skill-item i { font-size: 2.5rem; }
-    .skill-item span { opacity: 1; transform: translateY(0); }
-}
 
 /* ============ Projects — hover/tap reveal grid ============ */
 .projects-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: var(--sp-4);
+    /* start (not the grid default stretch) so one tile's disclosure opening
+       can't force its still-closed row-mate to inherit its taller height —
+       every tile keeps the same closed width/height regardless of siblings. */
+    align-items: start;
 }
 .project-tile {
     border-radius: var(--radius-soft);
@@ -667,8 +813,11 @@ section {
 .project-tile-face h3 a { color: #fff; text-decoration: none; }
 .project-tile-face h3 a:hover { text-decoration: underline; }
 
-/* Disclosure: a grid track animated from 0fr to 1fr smoothly expands an
-   auto-height region without JS measuring the content's real height. */
+/* Disclosure with a custom animation: the grid track itself animates 0fr to
+   1fr (a spring easing, not the linear default) to smoothly expand an
+   auto-height region without JS measuring the content's real height, while
+   the revealed content independently fades and rises into place instead of
+   just snapping in — two motions composed together, not a single default. */
 .project-tile-disclosure {
     display: grid;
     grid-template-rows: 0fr;
@@ -679,7 +828,17 @@ section {
     .project-tile:hover .project-tile-disclosure { grid-template-rows: 1fr; }
 }
 .project-tile-disclosure-inner { overflow: hidden; }
-.project-tile-detail { padding: var(--sp-4); color: var(--text-secondary); }
+.project-tile-detail {
+    padding: var(--sp-4);
+    color: var(--text-secondary);
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.28s var(--ease-soft), transform 0.32s var(--ease-soft);
+}
+.project-tile.is-revealed .project-tile-detail { opacity: 1; transform: translateY(0); transition-delay: 0.05s; }
+@media (hover: hover) and (pointer: fine) {
+    .project-tile:hover .project-tile-detail { opacity: 1; transform: translateY(0); transition-delay: 0.05s; }
+}
 .project-tile-detail .tech-stack { font-size: clamp(0.75rem, 1.8vw, 0.85rem); color: var(--text-secondary); font-style: italic; margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem); font-weight: 500; }
 .project-tile-detail p { font-size: clamp(0.85rem, 2vw, 0.95rem); line-height: 1.5; color: var(--text-secondary); }
 .project-tile-detail p:last-of-type { margin-bottom: 0; }
@@ -743,25 +902,19 @@ section {
 .social-link:hover { background: color-mix(in srgb, currentColor 18%, transparent); transform: translateY(-2px); }
 .social-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-/* Editorial type pairing: General Sans carries structure and interaction;
-   Gambetta continues to carry the longer, more personal copy from body. */
+/* Editorial type pairing: Fredoka carries headline/identity moments,
+   Fraunces (via body) carries the longer, more personal copy, and Inter
+   carries small functional UI labels. */
 #side-nav,
-.hero-card-name,
-.hero-card-role,
-.hero-card-chat,
-.hero-card-eyebrow,
 .hero-card-facts dt,
 .hero-card-links,
 .hero-card-flip,
 .hero-card-work,
-.content-card .item strong,
-.content-card .company,
-.skill-item span,
 .project-tile-detail .tech-stack,
 .contact-resume,
 .social-link,
 .site-footer {
-    font-family: 'General Sans', sans-serif;
+    font-family: var(--font-label);
 }
 .project-tile-detail .tech-stack { font-style: normal; letter-spacing: 0.015em; }
 
@@ -801,23 +954,14 @@ section {
     #name-display { font-size: clamp(2.25rem, 9vw, 4rem); }
     #name-display span { color: rgba(255, 255, 255, 0.95); -webkit-text-stroke: 1.2px rgba(255, 255, 255, 0.85); }
 
-    .content-card,
-    #about .content-card,
-    #experience .content-card {
+    .content-card {
         width: 90vw; max-width: 90vw; margin: 0 auto; box-sizing: border-box;
     }
     .content-card h2 { font-size: 2rem; }
     .content-card h3 { font-size: 1.5rem; }
     .content-card p, .content-card .bio { font-size: 1rem; line-height: 1.6; }
-    #about .content-card h2,
-    #experience .content-card h2 { font-size: 1.75rem; }
-    #about .content-card h3,
-    #experience .content-card h3 { font-size: 1.25rem; }
-    #about .content-card p,
-    #about .content-card .bio,
-    #experience .content-card p,
-    #experience .content-card li,
-    #experience .content-card .company { font-size: 1rem; line-height: 1.55; }
+    .experience-timeline .timeline-item { padding-left: 26px; }
+    .exp-card-disclosure-inner ul { padding-left: calc(clamp(1.2rem, 2.5vw, 1.7rem) + 0.4rem); }
 
     .contact-container { width: 100%; max-width: 100%; grid-template-columns: 1fr; justify-items: center; margin: 0 auto; box-sizing: border-box; }
     .contact-card { width: 90vw; max-width: 90vw; margin: 0 auto; padding: 1.5rem; box-sizing: border-box; text-align: center; align-items: center; }

@@ -20,7 +20,9 @@ const App = {
         this.initHeroCard();
         this.initGlowSurfaces();
         this.initMagnetic('.contact-resume, .social-link', 8);
-        this.moveThumb(document.querySelector('#side-nav a'));
+        this.initNavHighlight();
+        this.initSkillsFilter();
+        this.initExpCards();
     },
 
     animateName() {
@@ -41,28 +43,29 @@ const App = {
         container.appendChild(letters);
 
         // Let the settled name sit for a beat before it swooshes into the
-        // corner logo, sit again for the same beat, then bring in the rest
-        // of the site.
+        // corner logo, then bring in the rest of the site right behind it.
         const lettersSettleAt = text.length * 70 + 700;
         const restBeat = 900;
-        setTimeout(() => this.swooshNameToLogo(restBeat), lettersSettleAt + restBeat);
+        setTimeout(() => this.swooshNameToLogo(), lettersSettleAt + restBeat);
     },
 
     // FLIP: the full name shrinks/flies from the hero into the corner logo's
     // exact spot while fading out, timed against the logo fading/popping in
     // there — reads as "Kenny Pham" becoming "KP", not two separate fades.
-    // The rest of the site (nav + business card) waits half a restBeat after
-    // the swoosh actually lands, so "KP" gets a short beat alone too.
-    swooshNameToLogo(restBeat) {
+    // The rest of the site (nav + business card) comes in right behind that
+    // landing — just a short beat for "KP" to register alone, then everything
+    // else follows in quick succession instead of trickling in.
+    swooshNameToLogo() {
         const name = document.getElementById('name-display');
         const logo = this.elems.logo;
+        const postKpBeat = 150;
 
         const revealRest = () => {
             this.elems.sideNavLinks.classList.add('is-ready');
             this.elems.sideNavLinks.querySelectorAll('a').forEach((a, i) => {
-                setTimeout(() => a.style.animation = 'fallIn 0.4s ease-out forwards', i * 100);
+                setTimeout(() => a.style.animation = 'fallIn 0.4s ease-out forwards', i * 50);
             });
-            setTimeout(() => this.animateHeroCard(), 200);
+            this.animateHeroCard();
         };
 
         logo.classList.add('is-ready');
@@ -70,7 +73,7 @@ const App = {
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
             name.classList.add('is-collapsed');
             name.style.opacity = '0';
-            setTimeout(revealRest, restBeat / 2);
+            setTimeout(revealRest, postKpBeat);
             return;
         }
 
@@ -95,7 +98,7 @@ const App = {
         // still-flying, still-visible text via .name-letters' overflow:hidden.
         fly.finished.then(() => {
             name.classList.add('is-collapsed');
-            setTimeout(revealRest, restBeat / 2);
+            setTimeout(revealRest, postKpBeat);
         });
     },
 
@@ -148,7 +151,7 @@ const App = {
     },
 
     // Highlights the nav link for whichever section currently occupies the
-    // middle band of the viewport, and slides the rail thumb to match.
+    // middle band of the viewport, and slides the highlight to match.
     initActiveLinkObserver() {
         const sections = document.querySelectorAll('#main-content section[id]');
         const navLinks = document.querySelectorAll('#side-nav a');
@@ -160,7 +163,10 @@ const App = {
                     navLinks.forEach(a => {
                         const active = a.getAttribute('href') === `#${entry.target.id}`;
                         a.classList.toggle('active', active);
-                        if (active) this.moveThumb(a);
+                        // Only reposition the shared highlight if the user isn't
+                        // currently hovering the nav — a hover preview shouldn't
+                        // get yanked away by scroll-driven section changes.
+                        if (active && !this.elems.sideNavLinks.matches(':hover')) this.moveThumb(a);
                     });
                 }
             });
@@ -169,10 +175,29 @@ const App = {
         sections.forEach(sec => observer.observe(sec));
     },
 
+    // Motion Primitives-style "animated tabs" hover indicator: a soft-cornered
+    // highlight (not a pill) that slides under whichever link is hovered, and
+    // snaps back to whichever section is currently in view on mouse-leave —
+    // so the nav always reflects where the user is on the page.
+    initNavHighlight() {
+        const nav = this.elems.sideNavLinks;
+        if (!nav) return;
+
+        nav.querySelectorAll('a').forEach(link => {
+            link.addEventListener('mouseenter', () => this.moveThumb(link));
+        });
+        nav.addEventListener('mouseleave', () => {
+            const active = nav.querySelector('a.active');
+            if (active) this.moveThumb(active);
+            else this.elems.thumb?.classList.remove('is-visible');
+        });
+    },
+
     moveThumb(link) {
         if (!this.elems.thumb || !link) return;
-        this.elems.thumb.style.transform = `translateY(${link.offsetTop}px)`;
-        this.elems.thumb.style.height = `${link.offsetHeight}px`;
+        this.elems.thumb.style.transform = `translateX(${link.offsetLeft}px)`;
+        this.elems.thumb.style.width = `${link.offsetWidth}px`;
+        this.elems.thumb.classList.add('is-visible');
     },
 
     // Hero card: pointer-tracked tilt + sheen, and a flip to the details face.
@@ -186,6 +211,16 @@ const App = {
                 card.querySelectorAll('.hero-card-flip').forEach(b => b.setAttribute('aria-expanded', String(flipped)));
                 (flipped ? card.querySelector('.hero-card-back') : card.querySelector('.hero-card-front'))
                     .querySelector('.hero-card-flip').focus();
+
+                // A brief lift-and-settle layered on top of the rotate (see
+                // .hero-card.is-flipping in styles.css) — reads like a card
+                // being turned by hand instead of a flat spin in place.
+                if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    card.classList.remove('is-flipping');
+                    void card.offsetWidth; // restart the animation if clicked mid-flip
+                    card.classList.add('is-flipping');
+                    card.addEventListener('animationend', () => card.classList.remove('is-flipping'), { once: true });
+                }
             });
         });
 
@@ -251,6 +286,54 @@ const App = {
                 });
             });
         }).catch(() => {});
+    },
+
+    // Skills filter — the same sliding-highlight "animated tabs" interaction
+    // as the top-right nav (see initNavHighlight/moveThumb), reapplied here
+    // to filter skill chips by category. Unlike the nav thumb, this one is
+    // visible from the start (it reflects a persistent selection — "All" —
+    // not a hover preview), and it filters the .skill-chip grid on click.
+    initSkillsFilter() {
+        const filter = document.getElementById('skills-filter');
+        if (!filter) return;
+        const buttons = filter.querySelectorAll('button');
+        const thumb = filter.querySelector('.skills-filter-thumb');
+        const chips = document.querySelectorAll('.skill-chip');
+
+        const moveFilterThumb = (btn) => {
+            if (!thumb || !btn) return;
+            thumb.style.transform = `translateX(${btn.offsetLeft}px)`;
+            thumb.style.width = `${btn.offsetWidth}px`;
+            thumb.classList.add('is-visible');
+        };
+
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => b.classList.toggle('is-active', b === btn));
+                moveFilterThumb(btn);
+                const category = btn.dataset.filter;
+                chips.forEach(chip => {
+                    chip.classList.toggle('is-hidden', category !== 'all' && chip.dataset.category !== category);
+                });
+            });
+        });
+
+        moveFilterThumb(filter.querySelector('button.is-active'));
+    },
+
+    // Experience role cards: click-to-expand disclosure, reusing the same
+    // 0fr->1fr spring pattern as the project tiles (see .exp-card-disclosure
+    // in styles.css) but click-only — no hover-expand, since these hold
+    // denser text that shouldn't pop open from a passing cursor.
+    initExpCards() {
+        document.querySelectorAll('.exp-card-toggle').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const card = btn.closest('.exp-card');
+                const expanded = btn.getAttribute('aria-expanded') === 'true';
+                btn.setAttribute('aria-expanded', String(!expanded));
+                card.classList.toggle('is-open', !expanded);
+            });
+        });
     },
 
     initProjectReveal() {

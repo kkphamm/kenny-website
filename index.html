@@ -23,8 +23,9 @@
 
     <link rel="preload" href="images_webp/web_bkg.webp" as="image">
 
-    <link rel="preconnect" href="https://api.fontshare.com">
-    <link href="https://api.fontshare.com/v2/css?f[]=general-sans@500,600,700&f[]=gambetta@400,500&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Fraunces:opsz,wght@9..144,300..700&family=Inter:wght@400..700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"></noscript>
@@ -103,6 +104,8 @@
                             <button type="button" class="hero-card-flip" aria-controls="hero-card" aria-expanded="true">Back</button>
                         </div>
                     </div>
+
+                    <div class="hero-card-border-trail" aria-hidden="true"></div>
                 </div>
             </div>
         </div>
@@ -110,116 +113,153 @@
 
     <main id="main-content">
         <section id="about">
-            <div class="content-card reveal">
-                <h2>About Me</h2>
-                <p class="bio">Welcome! I am a motivated student looking to have a career building AI for the benefit of society. I love exploring new cafes and talking about anime, kpop, and lifting! Feel free to reach out, I would love to chat! Hope you like my website.</p>
-                <h3>Education</h3>
-                <div class="item"><strong>UC Berkeley</strong><span class="date">Aug 2025 – expected May 2027</span><p>B.S. in Electrical Engineering and Computer Science</p></div>
-                <div class="item"><strong>Irvine Valley College</strong><span class="date">Aug 2023 – May 2025</span><p>A.S. in Physics & Computer Science - 4.0 GPA</p></div>
+            <div class="section-inner">
+                <h2 class="section-heading reveal">About Me</h2>
 
-                <h3>Technical Skills</h3>
-                <div class="skills-wrapper">
-                    <div class="skill-item reveal" title="Python">
-                        <i class="devicon-python-plain colored"></i>
-                        <span>Python</span>
-                    </div>
-                    <div class="skill-item reveal" title="Pandas">
-                        <i class="devicon-pandas-plain colored"></i>
-                        <span>Pandas</span>
-                    </div>
-                    <div class="skill-item reveal" title="NumPy">
-                        <i class="devicon-numpy-plain colored"></i>
-                        <span>NumPy</span>
-                    </div>
-                    <div class="skill-item reveal" title="Scikit-Learn">
-                        <i class="devicon-scikitlearn-plain colored"></i>
-                        <span>Scikit</span>
+                <div class="about-intro content-card reveal">
+                    <p class="bio">Welcome! I am a motivated student looking to have a career building AI for the benefit of society. I love exploring new cafes and talking about anime, kpop, and lifting! Feel free to reach out, I would love to chat! Hope you like my website.</p>
+                </div>
+
+                <div class="about-grid">
+                    <div class="about-education content-card reveal">
+                        <h3>Education</h3>
+                        <ol class="timeline about-timeline">
+                            <li class="timeline-item reveal">
+                                <span class="timeline-node" aria-hidden="true"></span>
+                                <div class="timeline-content">
+                                    <strong>Irvine Valley College</strong>
+                                    <span class="timeline-date">Aug 2023 – May 2025</span>
+                                    <p>A.S. in Physics &amp; Computer Science – 4.0 GPA</p>
+                                </div>
+                            </li>
+                            <li class="timeline-item reveal">
+                                <span class="timeline-node is-current" aria-hidden="true"></span>
+                                <div class="timeline-content">
+                                    <strong>UC Berkeley</strong>
+                                    <span class="timeline-date">Aug 2025 – expected May 2027</span>
+                                    <p>B.S. in Electrical Engineering and Computer Science</p>
+                                </div>
+                            </li>
+                        </ol>
                     </div>
 
-                    <div class="skill-item reveal" title="JavaScript">
-                        <i class="devicon-javascript-plain colored"></i>
-                        <span>JS</span>
-                    </div>
-                    <div class="skill-item reveal" title="Node.js">
-                        <i class="devicon-nodejs-plain-wordmark colored"></i>
-                        <span>Node</span>
-                    </div>
-                    <div class="skill-item reveal" title="HTML5">
-                        <i class="devicon-html5-plain colored"></i>
-                        <span>HTML</span>
-                    </div>
-                    <div class="skill-item reveal" title="CSS3">
-                        <i class="devicon-css3-plain colored"></i>
-                        <span>CSS</span>
-                    </div>
-                    <div class="skill-item reveal" title="Java">
-                        <i class="devicon-java-plain colored"></i>
-                        <span>Java</span>
-                    </div>
-                    <div class="skill-item reveal" title="C++">
-                        <i class="devicon-cplusplus-plain colored"></i>
-                        <span>C++</span>
-                    </div>
-                    <div class="skill-item reveal" title="C">
-                        <i class="devicon-c-plain colored"></i>
-                        <span>C</span>
+                    <div class="about-skills content-card reveal">
+                        <h3>Technical Skills</h3>
+                        <div class="skills-filter" id="skills-filter">
+                            <span class="skills-filter-rail" aria-hidden="true"><span class="skills-filter-thumb"></span></span>
+                            <button type="button" class="is-active" data-filter="all">All</button>
+                            <button type="button" data-filter="languages">Languages</button>
+                            <button type="button" data-filter="ai-ml">AI / ML</button>
+                            <button type="button" data-filter="web">Web</button>
+                            <button type="button" data-filter="tools">Tools</button>
+                        </div>
+                        <div class="skills-grid">
+                            <div class="skill-chip reveal" data-category="languages"><i class="devicon-python-plain colored"></i><span>Python</span></div>
+                            <div class="skill-chip reveal" data-category="languages"><i class="devicon-java-plain colored"></i><span>Java</span></div>
+                            <div class="skill-chip reveal" data-category="languages"><i class="devicon-cplusplus-plain colored"></i><span>C++</span></div>
+                            <div class="skill-chip reveal" data-category="languages"><i class="devicon-c-plain colored"></i><span>C</span></div>
+                            <div class="skill-chip reveal" data-category="ai-ml"><i class="devicon-pandas-plain colored"></i><span>Pandas</span></div>
+                            <div class="skill-chip reveal" data-category="ai-ml"><i class="devicon-numpy-plain colored"></i><span>NumPy</span></div>
+                            <div class="skill-chip reveal" data-category="ai-ml"><i class="devicon-scikitlearn-plain colored"></i><span>Scikit-Learn</span></div>
+                            <div class="skill-chip reveal" data-category="web"><i class="devicon-javascript-plain colored"></i><span>JavaScript</span></div>
+                            <div class="skill-chip reveal" data-category="web"><i class="devicon-nodejs-plain-wordmark colored"></i><span>Node.js</span></div>
+                            <div class="skill-chip reveal" data-category="web"><i class="devicon-html5-plain colored"></i><span>HTML5</span></div>
+                            <div class="skill-chip reveal" data-category="web"><i class="devicon-css3-plain colored"></i><span>CSS3</span></div>
+                            <div class="skill-chip reveal" data-category="tools"><i class="devicon-git-plain colored"></i><span>Git</span></div>
+                            <div class="skill-chip reveal" data-category="tools"><i class="devicon-vscode-plain colored"></i><span>VS Code</span></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
         <section id="experience">
-            <div class="content-card reveal">
-                <h2>Experience</h2>
-                <div class="experience-detail reveal">
-                    <div class="exp-header">
-                        <img src="images/investor_logo.jfif" alt="Investor Impact logo" class="exp-logo">
-                        <div>
-                            <h3>Artificial Intelligence Intern</h3>
-                            <p class="company">Investor Impact, Inc. / Pacific Communicators, Inc., Tokyo, Japan | June 2026 – Present</p>
-                        </div>
-                    </div>
-                    <ul>
-                        <li>Developing, evaluating, and deploying AI resources for investor relations and research applications.</li>
-                    </ul>
-                </div>
-                <div class="experience-detail reveal">
-                    <div class="exp-header">
-                        <img src="images/cravexgum_logo.jfif" alt="CraveX logo" class="exp-logo">
-                        <div>
-                            <h3>Internal IT Intern</h3>
-                            <p class="company">CraveX, Berkeley, CA | February 2026 – Present</p>
-                        </div>
-                    </div>
-                    <ul>
-                        <li>Developed and maintained the company website and implemented automated email workflows, contributing to a 2x increase in conversion rate.</li>
-                    </ul>
-                </div>
-                <div class="experience-detail reveal">
-                    <div class="exp-header">
-                        <img src="images/uc_berkeley_eecs_logo.jfif" alt="UC Berkeley EECS logo" class="exp-logo">
-                        <div>
-                            <h3>Teaching Intern (CS 61A)</h3>
-                            <p class="company">UC Berkeley EECS | February 2026 – Present</p>
-                        </div>
-                    </div>
-                    <ul>
-                        <li>Led weekly labs for 20+ students, helping them debug assignments and grasp core CS concepts including recursion, SQL, concurrency, and Scheme.</li>
-                    </ul>
-                </div>
-                <div class="experience-detail reveal">
-                    <div class="exp-header">
-                        <img src="images/geotest_logo.jfif" alt="Marvin Test Solutions logo" class="exp-logo">
-                        <div>
-                            <h3>Quality Assurance Assistant Intern</h3>
-                            <p class="company">Marvin Test Solutions | June 2023 – Aug 2023</p>
-                        </div>
-                    </div>
-                    <ul>
-                        <li>Maintained test and inventory data accuracy in Excel.</li>
-                        <li>Supported HAZMAT and equipment calibration procedures.</li>
-                    </ul>
-                </div>
+            <div class="section-inner">
+                <h2 class="section-heading reveal">Experience</h2>
+
+                <ol class="timeline experience-timeline">
+                    <li class="timeline-item reveal">
+                        <span class="timeline-node is-current" aria-hidden="true"></span>
+                        <article class="exp-card is-open">
+                            <button type="button" class="exp-card-toggle" aria-expanded="true" aria-controls="exp-detail-ai">
+                                <img src="images/investor_logo.jfif" alt="Investor Impact logo" class="exp-logo">
+                                <span class="exp-card-heading">
+                                    <h3>Artificial Intelligence Intern</h3>
+                                    <span class="exp-company">Investor Impact, Inc. / Pacific Communicators, Inc., Tokyo, Japan &middot; June 2026 – Present</span>
+                                </span>
+                                <svg class="exp-chevron" width="18" height="18" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/></svg>
+                            </button>
+                            <div class="exp-card-disclosure" id="exp-detail-ai">
+                                <div class="exp-card-disclosure-inner">
+                                    <ul>
+                                        <li>Developing, evaluating, and deploying AI resources for investor relations and research applications.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </article>
+                    </li>
+                    <li class="timeline-item reveal">
+                        <span class="timeline-node is-current" aria-hidden="true"></span>
+                        <article class="exp-card">
+                            <button type="button" class="exp-card-toggle" aria-expanded="false" aria-controls="exp-detail-it">
+                                <img src="images/cravexgum_logo.jfif" alt="CraveX logo" class="exp-logo">
+                                <span class="exp-card-heading">
+                                    <h3>Internal IT Intern</h3>
+                                    <span class="exp-company">CraveX, Berkeley, CA &middot; February 2026 – Present</span>
+                                </span>
+                                <svg class="exp-chevron" width="18" height="18" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/></svg>
+                            </button>
+                            <div class="exp-card-disclosure" id="exp-detail-it">
+                                <div class="exp-card-disclosure-inner">
+                                    <ul>
+                                        <li>Developed and maintained the company website and implemented automated email workflows, contributing to a 2x increase in conversion rate.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </article>
+                    </li>
+                    <li class="timeline-item reveal">
+                        <span class="timeline-node is-current" aria-hidden="true"></span>
+                        <article class="exp-card">
+                            <button type="button" class="exp-card-toggle" aria-expanded="false" aria-controls="exp-detail-ta">
+                                <img src="images/uc_berkeley_eecs_logo.jfif" alt="UC Berkeley EECS logo" class="exp-logo">
+                                <span class="exp-card-heading">
+                                    <h3>Teaching Intern (CS 61A)</h3>
+                                    <span class="exp-company">UC Berkeley EECS &middot; February 2026 – Present</span>
+                                </span>
+                                <svg class="exp-chevron" width="18" height="18" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/></svg>
+                            </button>
+                            <div class="exp-card-disclosure" id="exp-detail-ta">
+                                <div class="exp-card-disclosure-inner">
+                                    <ul>
+                                        <li>Led weekly labs for 20+ students, helping them debug assignments and grasp core CS concepts including recursion, SQL, concurrency, and Scheme.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </article>
+                    </li>
+                    <li class="timeline-item reveal">
+                        <span class="timeline-node" aria-hidden="true"></span>
+                        <article class="exp-card">
+                            <button type="button" class="exp-card-toggle" aria-expanded="false" aria-controls="exp-detail-qa">
+                                <img src="images/geotest_logo.jfif" alt="Marvin Test Solutions logo" class="exp-logo">
+                                <span class="exp-card-heading">
+                                    <h3>Quality Assurance Assistant Intern</h3>
+                                    <span class="exp-company">Marvin Test Solutions &middot; June 2023 – Aug 2023</span>
+                                </span>
+                                <svg class="exp-chevron" width="18" height="18" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true"><path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"/></svg>
+                            </button>
+                            <div class="exp-card-disclosure" id="exp-detail-qa">
+                                <div class="exp-card-disclosure-inner">
+                                    <ul>
+                                        <li>Maintained test and inventory data accuracy in Excel.</li>
+                                        <li>Supported HAZMAT and equipment calibration procedures.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </article>
+                    </li>
+                </ol>
             </div>
         </section>
 
