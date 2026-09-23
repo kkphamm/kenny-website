@@ -17,6 +17,7 @@ const App = {
         this.initScrollReveal();
         this.initActiveLinkObserver();
         this.initProjectReveal();
+        this.initProjectCarousel();
         this.initHeroCard();
         this.initGlowSurfaces();
         this.initMagnetic('.contact-resume, .social-link', 8);
@@ -334,6 +335,29 @@ const App = {
                 card.classList.toggle('is-open', !expanded);
             });
         });
+    },
+
+    initProjectCarousel() {
+        const track = document.querySelector('.projects-grid');
+        const prev = document.querySelector('.carousel-arrow-prev');
+        const next = document.querySelector('.carousel-arrow-next');
+        if (!track || !prev || !next) return;
+
+        const scrollByTile = dir => {
+            const tile = track.querySelector('.project-tile');
+            if (!tile) return;
+            track.scrollBy({ left: dir * (tile.getBoundingClientRect().width + 24), behavior: 'smooth' });
+        };
+        prev.addEventListener('click', () => scrollByTile(-1));
+        next.addEventListener('click', () => scrollByTile(1));
+
+        const updateArrows = () => {
+            prev.disabled = track.scrollLeft <= 4;
+            next.disabled = track.scrollLeft >= track.scrollWidth - track.clientWidth - 4;
+        };
+        track.addEventListener('scroll', updateArrows);
+        window.addEventListener('resize', updateArrows);
+        updateArrows();
     },
 
     initProjectReveal() {

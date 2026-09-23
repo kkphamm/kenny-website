@@ -20,6 +20,14 @@
        text contrast holds — see content-card rule below. */
     --card-glass-bg: rgba(255, 255, 255, 0.6);
     --card-glass-border: rgba(255, 255, 255, 0.5);
+    /* Glass-card depth: bright inset edge top-left, dark inset edge bottom-right,
+       stacked on --shadow-card so the card reads as a beveled slab, not a flat tint. */
+    --glass-depth: inset 0 1px 0 rgba(255, 255, 255, 0.7),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.06),
+        inset 1px 0 0 rgba(255, 255, 255, 0.3),
+        inset -1px 0 0 rgba(0, 0, 0, 0.04);
+    /* Embossed title: light catching the top edge, soft drop below. */
+    --title-3d: 0 1px 0 rgba(255, 255, 255, 0.7), 0 2px 5px rgba(0, 0, 0, 0.12);
     /* Nav pill + hero CTA sit on the hero photo, not on --bg — they stay this
        fixed shade in both color schemes (see contrast note below) rather than
        tracking the themed --accent, which is deliberately lighter in dark mode
@@ -75,6 +83,11 @@
         --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 18px 40px -20px rgba(59, 130, 246, 0.22);
         --card-glass-bg: rgba(24, 24, 27, 0.55);
         --card-glass-border: rgba(255, 255, 255, 0.14);
+        --glass-depth: inset 0 1px 0 rgba(255, 255, 255, 0.16),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+            inset 1px 0 0 rgba(255, 255, 255, 0.08),
+            inset -1px 0 0 rgba(0, 0, 0, 0.25);
+        --title-3d: 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 6px rgba(0, 0, 0, 0.6);
     }
 }
 
@@ -170,6 +183,8 @@ h1, h2, h3 { font-family: var(--font-headline); font-weight: 600 !important; }
     height: 100%;
     object-fit: cover;
     display: block;
+    filter: blur(2px);
+    transform: scale(1.05);
 }
 .hero-scrim {
     position: fixed;
@@ -309,8 +324,8 @@ h1, h2, h3 { font-family: var(--font-headline); font-weight: 600 !important; }
     text-align: left;
     padding: var(--sp-4);
     border-radius: var(--radius-soft);
-    backdrop-filter: blur(18px) saturate(140%);
-    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    backdrop-filter: blur(8px) saturate(140%);
+    -webkit-backdrop-filter: blur(8px) saturate(140%);
     /* Static ambient shadow plus a pointer-driven cast shadow (--shadow-x/y,
        set alongside the tilt in initHeroCard) that shifts opposite the tilt
        direction, like light falling on a real card as it pivots. */
@@ -427,7 +442,7 @@ h1, h2, h3 { font-family: var(--font-headline); font-weight: 600 !important; }
 }
 .hero-card-links svg { width: 18.5px; height: 18.5px; flex-shrink: 0; }
 .hero-card-links .handle {
-    max-width: 0; overflow: hidden; white-space: nowrap;
+    max-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
     font-size: 0.76rem; font-weight: 500; opacity: 0;
     transition: max-width 0.4s var(--ease-soft), opacity 0.25s ease;
 }
@@ -435,7 +450,7 @@ h1, h2, h3 { font-family: var(--font-headline); font-weight: 600 !important; }
     background: var(--accent); border-color: var(--accent); color: #fff;
     gap: 8px; transform: translateY(-2px);
 }
-.hero-card-links a:hover .handle, .hero-card-links a:focus-visible .handle { max-width: 200px; opacity: 1; }
+.hero-card-links a:hover .handle, .hero-card-links a:focus-visible .handle { max-width: 110px; opacity: 1; }
 .hero-card-links a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 /* Shared button palette (the "Details" chip recipe): a low-opacity fill and
@@ -584,7 +599,7 @@ section {
     padding: var(--sp-8) 5vw;
 }
 .section-inner { width: 100%; max-width: 1100px; margin: 0 auto; }
-.section-heading { text-align: center; font-size: clamp(1.75rem, 4vw, 2.25rem); font-weight: 700; margin-bottom: var(--sp-5); color: var(--text-primary); }
+.section-heading { text-align: center; font-size: clamp(1.75rem, 4vw, 2.25rem); font-weight: 700; margin-bottom: var(--sp-5); color: var(--text-primary); text-shadow: var(--title-3d); }
 
 /* Content Specifics */
 .content-card { max-width: min(var(--bubble-max-width), var(--bubble-width)); width: 86%; }
@@ -634,14 +649,14 @@ section {
     box-sizing: border-box;
 }
 .timeline-node.is-current {
-    background: var(--accent);
-    border-color: var(--accent);
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent);
+    background: #fff;
+    border-color: #fff;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.22);
     animation: timeline-pulse 2.4s ease-in-out infinite;
 }
 @keyframes timeline-pulse {
-    0%, 100% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent); }
-    50% { box-shadow: 0 0 0 7px color-mix(in srgb, var(--accent) 8%, transparent); }
+    0%, 100% { box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.22); }
+    50% { box-shadow: 0 0 0 7px rgba(255, 255, 255, 0.08); }
 }
 .timeline-content strong { display: block; font-family: var(--font-headline); font-size: clamp(1.05rem, 2.2vw, 1.2rem); font-weight: 600; color: var(--text-primary); margin-bottom: 0.2rem; }
 .timeline-date { display: block; font-family: var(--font-label); font-size: clamp(0.8rem, 1.6vw, 0.88rem); color: var(--text-secondary); font-style: italic; margin-bottom: 0.3rem; }
@@ -700,18 +715,26 @@ section {
 /* Experience: each role is a disclosure card (same grid-rows 0fr->1fr spring
    pattern as the project tiles, see .project-tile-disclosure) sitting on a
    timeline node — current roles pulse via .timeline-node.is-current above. */
+/* One shared glass shell around the whole timeline (same recipe as
+   .content-card) — individual roles no longer get their own bordered card,
+   just a divider between them, so the section reads as one container. */
+.experience-card {
+    overflow: hidden;
+    padding: 0 clamp(0.75rem, 1.5vw, 1rem);
+    background: var(--card-glass-bg);
+    backdrop-filter: blur(8px) saturate(140%);
+    -webkit-backdrop-filter: blur(8px) saturate(140%);
+    border: 1px solid var(--card-glass-border);
+    border-radius: var(--radius-soft);
+    box-shadow: var(--shadow-card), var(--glass-depth);
+}
 .experience-timeline .timeline-item { padding-left: 32px; }
 .experience-timeline .timeline-node { top: 26px; }
+.experience-timeline .timeline-item:not(:last-child) { margin-bottom: 0; }
 .exp-card {
-    border-radius: var(--radius-soft);
-    overflow: hidden;
-    background: var(--card-glass-bg);
-    backdrop-filter: blur(18px) saturate(140%);
-    -webkit-backdrop-filter: blur(18px) saturate(140%);
-    border: 1px solid var(--card-glass-border);
-    box-shadow: var(--shadow-card);
-    transition: box-shadow 0.3s var(--ease-soft);
+    border-bottom: 1px solid var(--card-glass-border);
 }
+.experience-timeline .timeline-item:last-child .exp-card { border-bottom: none; }
 .exp-card-toggle {
     display: flex; align-items: center; gap: var(--sp-3);
     width: 100%;
@@ -766,11 +789,11 @@ section {
 .content-card,
 .contact-card {
     background: var(--card-glass-bg);
-    backdrop-filter: blur(18px) saturate(140%);
-    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    backdrop-filter: blur(8px) saturate(140%);
+    -webkit-backdrop-filter: blur(8px) saturate(140%);
     border: 1px solid var(--card-glass-border);
     border-radius: var(--radius-soft);
-    box-shadow: var(--shadow-card);
+    box-shadow: var(--shadow-card), var(--glass-depth);
     color: var(--text-secondary);
     padding: var(--bubble-padding-y) var(--bubble-padding-x);
     transition: box-shadow 0.3s var(--ease-soft);
@@ -778,21 +801,31 @@ section {
 .content-card h2 { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 700; margin-bottom: clamp(0.5rem, 1.5vw, 1rem); color: var(--text-primary); line-height: 1.2; }
 .content-card h3 { font-size: clamp(1.25rem, 3vw, 1.75rem); font-weight: 600; margin-top: clamp(0.75rem, 2vw, 1.5rem); margin-bottom: clamp(0.4rem, 1.2vw, 0.75rem); color: var(--text-primary); line-height: 1.3; }
 .content-card p { font-size: clamp(0.95rem, 2vw, 1.1rem); line-height: 1.5; margin-bottom: clamp(0.4rem, 1.2vw, 0.75rem); color: var(--text-secondary); }
-.content-card .bio { font-size: clamp(1rem, 2.2vw, 1.15rem); line-height: 1.6; margin-bottom: clamp(0.5rem, 1.5vw, 1rem); }
+.content-card .bio { font-size: clamp(1rem, 2.2vw, 1.15rem); line-height: 1.6; margin-bottom: clamp(0.5rem, 1.5vw, 1rem); color: #fff; }
 .content-card a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
 .content-card a:hover { color: var(--accent-hover); text-decoration: underline; }
 
-/* ============ Projects — hover/tap reveal grid ============ */
+/* ============ Projects — hover/tap reveal carousel ============
+   Native scroll-snap does the sliding (smooth scrollBy from the arrow
+   buttons in script.js) — no carousel library needed for a "simple" one. */
+.projects-carousel { position: relative; display: flex; align-items: center; gap: var(--sp-3); }
 .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    align-items: flex-start;
     gap: var(--sp-4);
-    /* start (not the grid default stretch) so one tile's disclosure opening
-       can't force its still-closed row-mate to inherit its taller height —
-       every tile keeps the same closed width/height regardless of siblings. */
-    align-items: start;
+    width: 72%;
+    margin-inline: auto;
+    overflow: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    padding-block: 4px;
 }
+.projects-grid::-webkit-scrollbar { display: none; }
 .project-tile {
+    flex: 0 0 100%;
+    width: 100%;
+    scroll-snap-align: start;
     border-radius: var(--radius-soft);
     overflow: hidden;
     background: var(--bg-elevated);
@@ -800,6 +833,24 @@ section {
     display: flex;
     flex-direction: column;
 }
+/* Prev/next controls: glass circles matching the site's card-glass recipe. */
+.carousel-arrow {
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--card-glass-bg);
+    backdrop-filter: blur(8px) saturate(140%);
+    -webkit-backdrop-filter: blur(8px) saturate(140%);
+    border: 1px solid var(--card-glass-border);
+    box-shadow: var(--shadow-card);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: transform 0.2s var(--ease-soft), box-shadow 0.2s var(--ease-soft);
+}
+.carousel-arrow:hover { transform: translateY(-2px); box-shadow: var(--shadow-card), 0 8px 20px -8px rgba(0,0,0,0.3); }
+.carousel-arrow:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.carousel-arrow:disabled { opacity: 0.35; cursor: default; transform: none; }
 .project-tile-media { position: relative; aspect-ratio: 4 / 3; overflow: hidden; }
 .project-tile-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 .project-tile-face {
@@ -846,7 +897,7 @@ section {
 .project-tile-detail a:hover { color: var(--accent-hover); text-decoration: underline; }
 
 @media (max-width: 768px) {
-    .projects-grid { grid-template-columns: 1fr; }
+    .carousel-arrow { width: 36px; height: 36px; }
 }
 
 .contact-container {
@@ -866,7 +917,7 @@ section {
     text-align: left;
 }
 .contact-header { display: flex; flex-direction: column; gap: 0.45rem; }
-.contact-intro { font-size: clamp(0.9rem, 1.8vw, 1rem); line-height: 1.45; color: var(--text-secondary); max-width: 62ch; }
+.contact-intro { font-size: clamp(0.9rem, 1.8vw, 1rem); line-height: 1.45; color: #fff; max-width: 62ch; }
 .contact-resume {
     display: inline-flex; align-items: center; gap: 0.5rem;
     align-self: flex-start;
