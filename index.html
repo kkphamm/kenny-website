@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <meta name="theme-color" content="#f7f6f3" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#0d0d0f" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#e8e8e8" media="(min-width: 1280px) and (prefers-color-scheme: light)">
+    <meta name="theme-color" content="#18181b" media="(min-width: 1280px) and (prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#0d0d0f" media="(max-width: 1279px)">
     <title>Kenny Pham - Portfolio</title>
     <meta name="description" content="Kenny Pham is an EECS student at UC Berkeley building AI tools for the benefit of society. This portfolio covers his education, internship experience in software and teaching, and projects spanning NeRF-based world generation, real-time AI interview assistants, and voice-controlled music assistants.">
     <link rel="canonical" href="https://kennypham.tech">
@@ -20,8 +21,7 @@
     <meta name="twitter:image" content="https://kennypham.tech/images_webp/pfp.webp">
 
     <link rel="icon" type="image/png" href="images/bonsai.png">
-
-    <link rel="preload" href="images_webp/web_bkg.webp" as="image">
+    <link rel="preload" href="images/web_bkg.jpg" as="image" media="(max-width: 1279px)">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,12 +48,7 @@
         </div>
     </nav>
 
-    <!-- Photo scope: hero-only. The redesign brief's default ("the photo is the room, not the wallpaper") — it appears once at full weight in the hero, everything after sits on the flat --bg surface. -->
     <header id="hero-section">
-        <picture id="hero-bg-layer" aria-hidden="true">
-            <img src="images_webp/web_bkg.webp" alt="" loading="eager" fetchpriority="high">
-        </picture>
-        <div class="hero-scrim" aria-hidden="true"></div>
         <div id="hero-center">
             <h1 id="name-display" aria-label="Kenny Pham"></h1>
 
@@ -384,9 +379,12 @@
     </main>
 
     <footer class="site-footer">
-        <p>© <span id="copyright-year"></span> Kenny Pham. <span class="footer-all-rights">All rights reserved </span>:)</p>
+        <p><span class="footer-copy">© <span id="copyright-year"></span> Kenny Pham. <span class="footer-all-rights">All rights reserved </span>:)</span></p>
     </footer>
 
     <script src="script.js" defer></script>
+    <script src="vendor/blobatar/index.js"></script>
+    <script src="vendor/blobatar/expression.js"></script>
+    <script src="blob-companion.js"></script>
 </body>
 </html>

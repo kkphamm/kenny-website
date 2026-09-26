@@ -20,6 +20,7 @@ const App = {
         this.initProjectCarousel();
         this.initHeroCard();
         this.initGlowSurfaces();
+        this.initPageSpotlight();
         this.initMagnetic('.contact-resume, .social-link', 8);
         this.initNavHighlight();
         this.initSkillsFilter();
@@ -109,15 +110,15 @@ const App = {
     animateHeroCard() {
         const card = document.getElementById('hero-card');
         if (!card) return;
-        const fallback = () => { card.style.transition = 'opacity 0.4s ease'; card.style.opacity = '1'; };
+        const announce = () => card.dispatchEvent(new Event('hero-card-reveal'));
+        const fallback = () => { card.style.transition = 'opacity 0.4s ease'; card.style.opacity = '1'; announce(); };
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return fallback();
 
         import('https://cdn.jsdelivr.net/npm/motion@11/+esm')
-            .then(({ animate }) => animate(
-                card,
-                { opacity: [0, 1], y: [24, 0], scale: [0.94, 1] },
-                { type: 'spring', stiffness: 260, damping: 22 }
-            ))
+            .then(({ animate }) => {
+                animate(card, { opacity: [0, 1], y: [24, 0], scale: [0.94, 1] }, { type: 'spring', stiffness: 260, damping: 22 });
+                announce();
+            })
             .catch(fallback);
     },
 
@@ -264,6 +265,14 @@ const App = {
                 el.style.setProperty('--my', `${((e.clientY - r.top) / r.height) * 100}%`);
             });
         });
+    },
+
+    initPageSpotlight() {
+        if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+        window.addEventListener('pointermove', e => {
+            document.body.style.setProperty('--cursor-x', `${e.clientX}px`);
+            document.body.style.setProperty('--cursor-y', `${e.clientY}px`);
+        }, { passive: true });
     },
 
     // Motion Primitives' signature "magnetic" hover: the element nudges a
