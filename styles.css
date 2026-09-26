@@ -7,34 +7,31 @@
 }
 
 :root {
+    color-scheme: dark;
     /* --- Restrained color system --- */
-    --bg: #d3d3d3;
-    --page-spotlight: rgba(255, 255, 255, 0.6);
-    --bg-elevated: #ffffff;
-    --text-primary: #1a1a1a;
-    --text-secondary: #55555a;
-    --border: #e3e1dc;
-    --accent: #0066cc;
-    --accent-hover: #004c99;
+    --bg: #18181b;
+    --page-spotlight: rgba(255, 255, 255, 0.14);
+    --bg-elevated: #18181b;
+    --text-primary: #f2f1ee;
+    --text-secondary: #a1a1aa;
+    --border: #2c2c30;
+    --accent: #3b82f6;
+    --accent-hover: #60a5fa;
     /* Translucent counterpart of --bg-elevated for the glass-card treatment
-       (same blur/saturate recipe as .hero-card-face), tuned per theme so
-       text contrast holds — see content-card rule below. */
-    --card-glass-bg: rgba(255, 255, 255, 0.6);
-    --card-glass-border: rgba(255, 255, 255, 0.5);
+       (same blur/saturate recipe as .hero-card-face). */
+    --card-glass-bg: rgba(24, 24, 27, 0.55);
+    --card-glass-border: rgba(255, 255, 255, 0.14);
     /* Glass-card depth: bright inset edge top-left, dark inset edge bottom-right,
        stacked on --shadow-card so the card reads as a beveled slab, not a flat tint. */
-    --glass-depth: inset 0 1px 0 rgba(255, 255, 255, 0.7),
-        inset 0 -1px 0 rgba(0, 0, 0, 0.06),
-        inset 1px 0 0 rgba(255, 255, 255, 0.3),
-        inset -1px 0 0 rgba(0, 0, 0, 0.04);
+    --glass-depth: inset 0 1px 0 rgba(255, 255, 255, 0.16),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+        inset 1px 0 0 rgba(255, 255, 255, 0.08),
+        inset -1px 0 0 rgba(0, 0, 0, 0.25);
     /* Embossed title: light catching the top edge, soft drop below. */
-    --title-3d: 0 1px 0 rgba(255, 255, 255, 0.7), 0 2px 5px rgba(0, 0, 0, 0.12);
-    /* Nav pill + hero CTA sit on the hero photo, not on --bg — they stay this
-       fixed shade in both color schemes (see contrast note below) rather than
-       tracking the themed --accent, which is deliberately lighter in dark mode
-       for its own (different) job of being link/text against a near-black page. */
+    --title-3d: 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 6px rgba(0, 0, 0, 0.6);
+    /* Hero controls use a fixed blue over their photo. */
     --accent-on-photo: #0066cc;
-    --shadow-card: 0 1px 2px rgba(26, 26, 26, 0.04), 0 18px 40px -20px rgba(0, 102, 204, 0.16);
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 18px 40px -20px rgba(59, 130, 246, 0.22);
 
     /* --- Shape lock: one soft radius for cards/images/containers, one pill for interactive chips --- */
     --radius-soft: 16px;
@@ -70,27 +67,6 @@
     --ease-soft: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-reveal: cubic-bezier(0.23, 1, 0.32, 1);
     --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg: #18181b;
-        --page-spotlight: rgba(255, 255, 255, 0.14);
-        --bg-elevated: #18181b;
-        --text-primary: #f2f1ee;
-        --text-secondary: #a1a1aa;
-        --border: #2c2c30;
-        --accent: #3b82f6;
-        --accent-hover: #60a5fa;
-        --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 18px 40px -20px rgba(59, 130, 246, 0.22);
-        --card-glass-bg: rgba(24, 24, 27, 0.55);
-        --card-glass-border: rgba(255, 255, 255, 0.14);
-        --glass-depth: inset 0 1px 0 rgba(255, 255, 255, 0.16),
-            inset 0 -1px 0 rgba(0, 0, 0, 0.4),
-            inset 1px 0 0 rgba(255, 255, 255, 0.08),
-            inset -1px 0 0 rgba(0, 0, 0, 0.25);
-        --title-3d: 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 6px rgba(0, 0, 0, 0.6);
-    }
 }
 
 @media (prefers-reduced-motion: reduce) {
