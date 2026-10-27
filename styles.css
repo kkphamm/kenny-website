@@ -504,9 +504,7 @@ h1, h2, h3 { font-family: var(--font-headline); font-weight: 600 !important; }
     border-top-color: rgba(255,255,255,0.14);
 }
 .hero-card-connect { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); }
-/* Icon-only pills that reveal their handle on hover/focus, filling solid
-   --accent — same interaction as .contact-resume's currentColor fill, just
-   with a max-width-driven text reveal on top. */
+/* Icon-only pills reveal their handle on hover/focus and fill with --accent. */
 .hero-card-links { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
 .hero-card-links a {
     display: inline-flex; align-items: center; justify-content: center; gap: 0;
@@ -534,9 +532,8 @@ h1, h2, h3 { font-family: var(--font-headline); font-weight: 600 !important; }
 /* Shared button palette (the "Details" chip recipe): a low-opacity fill and
    border derived from the button's own text color via color-mix, so the
    exact same 8%/16%/18% ratios read correctly whether the button sits on
-   the dark hero photo (white text) or a light/adaptive card (dark text) —
-   see .contact-resume, which reuses this formula. */
-.hero-card-flip, .hero-card-work {
+   the dark hero photo (white text) or a light/adaptive card (dark text). */
+.hero-card-flip {
     font: inherit; font-size: 0.8rem; font-weight: 600;
     color: rgba(255,255,255,0.85); text-decoration: none;
     background: color-mix(in srgb, currentColor 8%, transparent);
@@ -546,8 +543,8 @@ h1, h2, h3 { font-family: var(--font-headline); font-weight: 600 !important; }
     display: flex;
     transition: background 0.2s ease, color 0.2s ease, transform 0.15s ease-out;
 }
-.hero-card-flip:hover, .hero-card-work:hover { background: color-mix(in srgb, currentColor 18%, transparent); color: #fff; }
-.hero-card-flip:focus-visible, .hero-card-work:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.hero-card-flip:hover { background: color-mix(in srgb, currentColor 18%, transparent); color: #fff; }
+.hero-card-flip:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 /* Front Details action mirrors the reference's plain "About me" link. */
 .hero-card-front .hero-card-flip {
     margin-left: auto;
@@ -995,27 +992,10 @@ section {
 }
 .contact-header { display: flex; flex-direction: column; gap: 0.45rem; }
 .contact-intro { font-size: clamp(0.9rem, 1.8vw, 1rem); line-height: 1.45; color: var(--text-secondary); max-width: 62ch; }
-.contact-resume {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    align-self: flex-start;
-    margin-top: 0.2rem;
-    padding: 0.6rem 1.1rem;
-    border-radius: var(--radius-pill);
-    color: var(--text-primary);
-    background: color-mix(in srgb, currentColor 8%, transparent);
-    border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
-    font-weight: 600; font-size: 0.9rem;
-    text-decoration: none;
-    transition: background 0.2s ease, transform 0.2s ease;
-}
-.contact-resume:hover { background: color-mix(in srgb, currentColor 18%, transparent); transform: translateY(-2px); }
-.contact-resume:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .contact-card h2 { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 700; margin-bottom: 0.2rem; color: var(--text-primary); text-align: left; }
-.contact-card h3 { font-size: clamp(1.1rem, 2vw, 1.3rem); font-weight: 600; margin-top: 0; margin-bottom: 0.2rem; color: var(--text-primary); text-align: left; }
+.contact-card h3 { font-size: clamp(1.1rem, 2vw, 1.3rem); font-weight: 600; margin-top: 0; margin-bottom: 0.2rem; padding-bottom: 6px; color: var(--text-primary); text-align: left; }
 .social-block { border-top: 1px solid var(--border); padding-top: 0.8rem; }
 .social-links { display: flex; justify-content: flex-start; gap: 0.6rem; margin-top: 0; align-items: center; flex-wrap: wrap; }
-/* Same opaque pill recipe as .contact-resume, so every contact action
-   (resume, email, linkedin, github, instagram) reads as one button family. */
 .social-link {
     display: inline-flex; align-items: center; gap: 0.5rem;
     padding: 0.6rem 1.1rem;
@@ -1037,9 +1017,7 @@ section {
 .hero-card-facts dt,
 .hero-card-links,
 .hero-card-flip,
-.hero-card-work,
 .project-tile-detail .tech-stack,
-.contact-resume,
 .social-link,
 .site-footer {
     font-family: var(--font-label);
@@ -1096,7 +1074,6 @@ section {
     .contact-card { width: 90vw; max-width: 90vw; margin: 0 auto; padding: 1.5rem; box-sizing: border-box; text-align: center; align-items: center; }
     .contact-card h2 { text-align: center; font-size: 1.7rem; }
     .contact-intro { text-align: center; }
-    .contact-resume { align-self: center; }
     .social-block { width: 100%; padding-top: 1rem; }
     .contact-card h3 { text-align: center; }
     .social-links { width: 100%; justify-content: center; }

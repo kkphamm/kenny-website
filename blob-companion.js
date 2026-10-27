@@ -152,9 +152,21 @@ let dir = 1;
 let hovering = false;
 let shown = false;
 let lastTime = performance.now();
+let landingProgress = 1;
+let introStarted = false;
+let introDone = false;
+let introTimer;
+let introTyping;
 let endState = 0;
 let endTimer;
 let endTyping;
+
+function pauseIntro() {
+    if (message.hidden) return;
+    if (introTimer) clearTimeout(introTimer);
+    introTimer = null;
+    message.hidden = true;
+}
 
 function resetEnd() {
     if (!endState) return;
@@ -200,8 +212,12 @@ function startEnd() {
 
 function render(moving = false) {
     const { x, y } = pointAt(distance);
+    const target = targetDistance();
+    const remaining = Math.abs(target - distance);
     const phase = (distance % STEP_LENGTH) / STEP_LENGTH;
-    const hop = reduced ? 0 : Math.sin(phase * Math.PI) * Math.min(1, (routeLength - distance) / STEP_LENGTH);
+    const settling = !reduced && !moving && !hovering && landingProgress < 1;
+    let hop = reduced || !moving ? 0 : Math.sin(phase * Math.PI) * Math.min(1, remaining / STEP_LENGTH);
+    if (settling) hop = Math.sin(landingProgress * Math.PI) ** 2 * 0.35;
 
     blob.style.setProperty("--bx", `${x}px`);
     blob.style.setProperty("--by", `${y - hop * HOP_HEIGHT}px`);
@@ -210,10 +226,11 @@ function render(moving = false) {
     shadow.style.setProperty("--sscale", String(Math.max(0.2, 1 - hop * 0.65)));
     shadow.style.setProperty("--sopacity", String(0.8 - hop * 0.65));
 
+    const lightEnd = remaining <= STEP_LENGTH ? target : distance + dir * STEP_LENGTH;
     for (let k = 0; k < LIGHT_STEPS; k++) {
-        const next = distance + dir * (k + 1) * STEP_LENGTH / LIGHT_STEPS;
+        const next = lightEnd - dir * (LIGHT_STEPS - k - 1) * STEP_LENGTH / LIGHT_STEPS;
         const dot = lights[k];
-        if (next < 0 || next > routeLength) {
+        if (next < 0 || next > routeLength || dir * (next - distance) <= 0) {
             dot.style.setProperty("--lopacity", "0");
             continue;
         }
@@ -222,7 +239,11 @@ function render(moving = false) {
         dot.style.setProperty("--ly", `${p.y}px`);
         dot.style.setProperty("--lopacity", String(moving && !hovering ? 0.85 - k * 0.25 : 0));
     }
-    const atEnd = shown && window.scrollY >= document.documentElement.scrollHeight - window.innerHeight && distance >= routeLength - 1 && message.hidden;
+    if (shown && !introDone) {
+        if (moving || settling || remaining > 0) pauseIntro();
+        else if (message.hidden) showIntro();
+    }
+    const atEnd = shown && !moving && !settling && window.scrollY >= document.documentElement.scrollHeight - window.innerHeight && distance >= routeLength - 1 && message.hidden;
     if (moving || !atEnd) resetEnd();
     if (atEnd && !endState) startEnd();
 }
@@ -254,27 +275,34 @@ function frame(now) {
         if (delta !== 0) dir = delta > 0 ? 1 : -1;
         distance += Math.max(-SPEED * dt, Math.min(SPEED * dt, delta));
     }
-    render(distance !== previous);
+    const moving = distance !== previous;
+    if (moving) landingProgress = 0;
+    else if (hovering) landingProgress = 1;
+    else landingProgress = Math.min(1, landingProgress + dt / 0.4);
+    render(moving);
     requestAnimationFrame(frame);
 }
 
-function showCompanion() {
-    shown = true;
-    [blob, shadow, ...lights].forEach((element) => { element.hidden = false; });
+function showIntro() {
     message.hidden = false;
-    if (reduced) {
-        typed.textContent = LINES.at(-1);
-        setTimeout(() => { message.hidden = true; render(); }, 2500);
+    const finish = () => { introDone = true; message.hidden = true; render(); };
+    if (introStarted) {
+        if (!introTyping) introTimer = setTimeout(finish, 2500);
         return;
     }
-    lastTime = performance.now();
-    requestAnimationFrame(frame);
+    introStarted = true;
+    if (reduced) {
+        typed.textContent = LINES.at(-1);
+        introTimer = setTimeout(finish, 2500);
+        return;
+    }
     message.classList.add("is-typing");
     let line = 0;
     let count = 0;
     let deleting = false;
     let pause = 0;
-    const typing = setInterval(() => {
+    introTyping = setInterval(() => {
+        if (message.hidden) return;
         if (pause > 0) { pause--; return; }
         count += deleting ? -1 : 1;
         typed.textContent = LINES[line].slice(0, count);
@@ -284,15 +312,25 @@ function showCompanion() {
                 pause = 12;
                 return;
             }
-            clearInterval(typing);
+            clearInterval(introTyping);
+            introTyping = null;
             message.classList.remove("is-typing");
-            setTimeout(() => { message.hidden = true; }, 2500);
+            introTimer = setTimeout(finish, 2500);
         } else if (count === 0) {
             deleting = false;
             line++;
             pause = 4;
         }
     }, 44);
+}
+
+function showCompanion() {
+    shown = true;
+    [blob, shadow, ...lights].forEach((element) => { element.hidden = false; });
+    render();
+    if (reduced) return;
+    lastTime = performance.now();
+    requestAnimationFrame(frame);
 }
 
 if (!footerCopy || sections.some((section, i) => !section || !(i ? section.querySelector(".section-inner, .contact-container") : document.getElementById("hero-card")))) {
@@ -309,7 +347,13 @@ if (!footerCopy || sections.some((section, i) => !section || !(i ? section.query
     }
     if (reduced) {
         lights.forEach((light) => { light.style.display = "none"; });
-        window.addEventListener("scroll", () => { distance = targetDistance(); render(); });
+        let settleTimer;
+        window.addEventListener("scroll", () => {
+            distance = targetDistance();
+            render(true);
+            if (settleTimer) clearTimeout(settleTimer);
+            settleTimer = setTimeout(() => render(), 200);
+        });
     } else {
         blob.addEventListener("pointerenter", () => { hovering = true; blobVisual.classList.add("is-hovered"); shadow.classList.add("is-hovered"); });
         blob.addEventListener("pointerleave", () => { hovering = false; blobVisual.classList.remove("is-hovered"); shadow.classList.remove("is-hovered"); });

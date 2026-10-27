@@ -21,7 +21,7 @@ const App = {
         this.initHeroCard();
         this.initGlowSurfaces();
         this.initPageSpotlight();
-        this.initMagnetic('.contact-resume, .social-link', 8);
+        this.initMagnetic('.social-link', 8);
         this.initNavHighlight();
         this.initSkillsFilter();
         this.initExpCards();

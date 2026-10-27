@@ -72,7 +72,7 @@ function run(reduced = false) {
         setFooterExtra(value) { footerExtra = value; resizeBody(); },
         reveal() { sections.get("hero-section").querySelector().events.get("hero-card-reveal")(); },
         runTimeout(delay) { const index = timeouts.findIndex((timer) => timer.delay === delay && timer.active); assert.notEqual(index, -1); const timer = timeouts.splice(index, 1)[0]; timer.active = false; timer.fn(); },
-        step() { now += 50; frames.shift()(now); },
+        step(ms = 50) { now += ms; frames.shift()(now); },
     };
 }
 
@@ -113,38 +113,55 @@ for (const bottom of [640, 2140, 3540, 5190, 6440]) {
     else if (laneX < 720) assert.ok(controlX <= 120 && laneX <= 120);
     else assert.ok(controlX >= 1320 && laneX >= 1320);
 }
-assert.ok(parseFloat(first.styles.get("--ly")) > parseFloat(blob.styles.get("--by")));
 assert.equal(first.styles.get("--lopacity"), "0"); // idle dots are hidden
 
 page.window.scrollY = 6300;
 const beforeMove = parseFloat(shadow.styles.get("--sy"));
 page.step();
-assert.ok(parseFloat(shadow.styles.get("--sy")) > beforeMove); // moves and hops during typing
+assert.ok(parseFloat(shadow.styles.get("--sy")) > beforeMove);
 assert.equal(first.styles.get("--lopacity"), "0.85");
+assert.ok(parseFloat(first.styles.get("--ly")) > parseFloat(blob.styles.get("--by")));
 assert.ok(parseFloat(third.styles.get("--lopacity")) > 0);
 assert.ok(Math.abs(parseFloat(second.styles.get("--ly")) - parseFloat(first.styles.get("--ly")) - 60 * 6615 / 9000) < 0.01);
 assert.ok(Math.abs(parseFloat(third.styles.get("--ly")) - parseFloat(second.styles.get("--ly")) - 60 * 6615 / 9000) < 0.01);
-assert.equal(bubble.hidden, false);
+assert.equal(bubble.hidden, true); // movement interrupts the intro
 assert.equal(typed.textContent, "H");
+assert.equal(page.intervals[0].active, true);
+for (let i = 0; i < 20; i++) page.intervals[0].fn();
+assert.equal(typed.textContent, "H"); // typing pauses while the bubble is hidden
 assert.ok(parseFloat(blob.styles.get("--by")) < 1000); // catches up at a fixed speed
 blob.events.get("pointerenter")();
 assert.equal(shadow.classes.has("is-hovered"), true);
 page.step();
 assert.equal(first.styles.get("--lopacity"), "0");
+assert.equal(bubble.hidden, true); // hovering during a journey does not restart speech
+assert.equal(shadow.styles.get("--sscale"), "1");
+assert.equal(shadow.styles.get("--sopacity"), "0.8");
+assert.equal(parseFloat(shadow.styles.get("--sy")) - parseFloat(blob.styles.get("--by")), 24);
 blob.events.get("pointerleave")();
 assert.equal(shadow.classes.has("is-hovered"), false);
 page.step();
 assert.equal(first.styles.get("--lopacity"), "0.85");
+for (let i = 0; i < 360; i++) page.step();
+assert.equal(bubble.hidden, false);
+assert.equal(typed.textContent, "H");
+assert.equal(shadow.styles.get("--sscale"), "1");
+assert.equal(shadow.styles.get("--sopacity"), "0.8");
+assert.equal(parseFloat(shadow.styles.get("--sy")) - parseFloat(blob.styles.get("--by")), 24);
+const introTyping = page.intervals.at(-1);
+assert.equal(page.intervals.length, 1); // movement never starts a second introduction
+introTyping.fn();
+assert.equal(typed.textContent, "He"); // continues the same greeting instead of repeating it
 let erased = false;
 let secondLine = false;
 let previousLength = typed.textContent.length;
-for (let i = 0; i < 200 && page.intervals[0].active; i++) {
-    page.intervals[0].fn();
+for (let i = 0; i < 200 && introTyping.active; i++) {
+    introTyping.fn();
     erased ||= typed.textContent.length < previousLength;
     secondLine ||= typed.textContent === "Your journey companion";
     previousLength = typed.textContent.length;
 }
-assert.equal(page.intervals[0].active, false);
+assert.equal(introTyping.active, false);
 assert.equal(erased, true);
 assert.equal(secondLine, true);
 assert.equal(typed.textContent, "Scroll to adventure!");
@@ -152,7 +169,7 @@ assert.equal(bubble.classes.has("is-typing"), false);
 assert.equal(bubble.hidden, false);
 page.runTimeout(2500);
 assert.equal(bubble.hidden, true);
-for (let i = 0; i < 350; i++) page.step();
+for (let i = 0; i < 360; i++) page.step();
 assert.ok(Math.abs(parseFloat(blob.styles.get("--by")) - 7065) < 0.1); // footer text baseline
 assert.ok(Math.abs(parseFloat(blob.styles.get("--bx")) - 850) < 1); // 50px right of footer copy
 assert.equal(endBubble.hidden, true);
@@ -164,10 +181,11 @@ page.runTimeout(550);
 assert.equal(visual.classes.has("is-celebrating"), false);
 assert.equal(endBubble.hidden, false);
 assert.equal(endBubble.classes.has("is-typing"), true);
-assert.equal(page.intervals[1].delay, 44);
-page.intervals[1].fn();
+const outroTyping = page.intervals.at(-1);
+assert.equal(outroTyping.delay, 44);
+outroTyping.fn();
 assert.equal(endTyped.textContent, "w");
-for (let i = 1; i < 27; i++) page.intervals[1].fn();
+for (let i = 1; i < 27; i++) outroTyping.fn();
 assert.equal(endTyped.textContent, "we made it to the end, yay!");
 assert.equal(endBubble.classes.has("is-typing"), false);
 assert.equal(first.styles.get("--lopacity"), "0");
@@ -184,7 +202,7 @@ assert.notEqual(returnPath, path); // new route when leaving the footer
 assert.equal(endBubble.hidden, true);
 assert.ok(parseFloat(first.styles.get("--ly")) < parseFloat(blob.styles.get("--by")));
 assert.equal(first.styles.get("--lopacity"), "0.85");
-for (let i = 0; i < 350; i++) page.step();
+for (let i = 0; i < 360; i++) page.step();
 page.window.scrollY = 6300;
 page.step();
 assert.notEqual(track.children[0].d, returnPath); // new route when leaving the top
@@ -203,22 +221,151 @@ still.reveal();
 still.runTimeout(1000);
 assert.equal(still.nodes[5].children[1].children[0].textContent, "Scroll to adventure!");
 assert.equal(still.intervals.length, 0);
-still.runTimeout(2500);
-assert.equal(still.nodes[5].children[1].hidden, true);
 still.window.scrollY = 6300;
 still.windowEvents.get("scroll")();
+assert.equal(still.nodes[5].children[1].hidden, true);
+assert.equal(still.timeouts.some((timer) => timer.delay === 2500 && timer.active), false);
 assert.equal(still.nodes[5].children[2].hidden, true);
 still.window.scrollY = 0;
 still.windowEvents.get("scroll")();
-assert.equal(still.timeouts.some((timer) => timer.delay === 200 && timer.active), false);
+assert.equal(still.timeouts.filter((timer) => timer.delay === 200 && timer.active).length, 1);
 still.window.scrollY = 6300;
 still.windowEvents.get("scroll")();
+still.runTimeout(200); // scrolling settles before the same intro resumes
+assert.equal(still.nodes[5].children[1].hidden, false);
+assert.equal(still.nodes[5].children[2].hidden, true);
+still.runTimeout(2500);
 still.runTimeout(200);
 assert.equal(still.nodes[5].children[2].hidden, false);
 assert.equal(still.nodes[5].children[2].children[0].textContent, "we made it to the end, yay!");
 still.window.scrollY = 0;
 still.windowEvents.get("scroll")();
 assert.equal(still.nodes[5].children[2].hidden, true);
+
+const interrupted = run();
+const [, , , , interruptedShadow, interruptedBlob] = interrupted.nodes;
+const interruptedBubble = interruptedBlob.children[1];
+interrupted.reveal();
+interrupted.runTimeout(1000);
+for (let i = 0; i < 200 && interrupted.intervals[0].active; i++) interrupted.intervals[0].fn();
+assert.equal(interruptedBubble.hidden, false);
+interrupted.window.scrollY = 1400;
+interrupted.step();
+assert.equal(interruptedBubble.hidden, true);
+assert.equal(interrupted.timeouts.some((timer) => timer.delay === 2500 && timer.active), false);
+assert.ok(parseFloat(interruptedShadow.styles.get("--sscale")) < 1); // still hops while travelling
+for (const scrollY of [1400, 1600, 1100, 2500]) {
+    interrupted.window.scrollY = scrollY;
+    for (let i = 0; i < 150; i++) interrupted.step();
+    assert.equal(interruptedBubble.hidden, false);
+    assert.equal(interruptedShadow.styles.get("--sscale"), "1");
+    assert.equal(interruptedShadow.styles.get("--sopacity"), "0.8");
+    assert.equal(parseFloat(interruptedShadow.styles.get("--sy")) - parseFloat(interruptedBlob.styles.get("--by")), 24);
+    assert.equal(interruptedBubble.children[0].textContent, "Scroll to adventure!");
+    assert.equal(interrupted.intervals.length, 1);
+    assert.equal(interrupted.intervals.filter((timer) => timer.active).length, 0);
+}
+interrupted.runTimeout(2500);
+interrupted.window.scrollY = 1500;
+for (let i = 0; i < 150; i++) interrupted.step();
+assert.equal(interruptedBubble.hidden, true); // a finished introduction does not repeat
+assert.equal(interrupted.intervals.filter((timer) => timer.active).length, 0);
+
+const earlyScroll = run();
+earlyScroll.reveal();
+earlyScroll.window.scrollY = 1400;
+earlyScroll.runTimeout(1000);
+assert.equal(earlyScroll.nodes[5].children[1].hidden, true);
+assert.equal(earlyScroll.intervals.length, 0);
+for (let i = 0; i < 150; i++) earlyScroll.step();
+assert.equal(earlyScroll.nodes[5].children[1].hidden, false);
+
+const approach = run();
+const approachLights = approach.nodes.slice(1, 4);
+const approachBlob = approach.nodes[5];
+approach.reveal();
+approach.runTimeout(1000);
+for (const scrollY of [1400, 700, 6300, 0]) {
+    approach.window.scrollY = scrollY;
+    const counts = [];
+    let finalDots;
+    for (let i = 0; i < 600; i++) {
+        approach.step();
+        const visible = approachLights.filter((dot) => parseFloat(dot.styles.get("--lopacity")) > 0);
+        if (counts.at(-1) !== visible.length) counts.push(visible.length);
+        if (visible.length === 2 && !finalDots) {
+            finalDots = approachLights.map((dot) => ({ x: dot.styles.get("--lx"), y: dot.styles.get("--ly") }));
+        }
+        if (finalDots) {
+            for (const dot of visible) {
+                const point = finalDots[approachLights.indexOf(dot)];
+                assert.equal(dot.styles.get("--lx"), point.x);
+                assert.equal(dot.styles.get("--ly"), point.y); // remaining dots stay still as Blob reaches them
+            }
+        }
+        if (visible.length === 0) break;
+    }
+    assert.deepEqual(counts, [3, 2, 1, 0]);
+    assert.ok(finalDots);
+    assert.equal(approachBlob.styles.get("--bx"), finalDots[2].x);
+    assert.equal(approachBlob.styles.get("--by"), finalDots[2].y); // stops at the final dot in both directions
+    for (let i = 0; i < 10; i++) approach.step();
+    assert.ok(approachLights.every((dot) => dot.styles.get("--lopacity") === "0"));
+}
+approach.window.scrollY = 700;
+for (let i = 0; i < 100; i++) approach.step();
+approach.window.scrollY = 710;
+approach.step(1000 / 120);
+assert.equal(approachLights.filter((dot) => parseFloat(dot.styles.get("--lopacity")) > 0).length, 1);
+assert.ok(parseFloat(approachLights[2].styles.get("--ly")) > parseFloat(approach.nodes[4].styles.get("--sy")) - 24);
+for (let i = 0; i < 10; i++) approach.step();
+assert.ok(approachLights.every((dot) => dot.styles.get("--lopacity") === "0"));
+
+for (const frameMs of [1000 / 60, 1000 / 120]) {
+    const landing = run();
+    const [, landingLight, , , landingShadow, landingBlob] = landing.nodes;
+    const landingBubble = landingBlob.children[1];
+    landing.reveal();
+    landing.runTimeout(1000);
+    landing.window.scrollY = 1400;
+    let arrived = false;
+    for (let i = 0; i < 600; i++) {
+        const previousY = landingShadow.styles.get("--sy");
+        landing.step(frameMs);
+        if (previousY === landingShadow.styles.get("--sy") && landingLight.styles.get("--lopacity") === "0") {
+            arrived = true;
+            break;
+        }
+    }
+    assert.equal(arrived, true);
+    const groundY = parseFloat(landingShadow.styles.get("--sy")) - 24;
+    const heights = [];
+    for (let i = 0; i < Math.ceil(600 / frameMs); i++) {
+        const height = groundY - parseFloat(landingBlob.styles.get("--by"));
+        heights.push(height);
+        assert.equal(parseFloat(landingShadow.styles.get("--sy")), groundY + 24);
+        assert.ok(Math.abs(parseFloat(landingShadow.styles.get("--sscale")) - (1 - height / 34 * 0.65)) < 1e-9);
+        if (height > 0) assert.equal(landingBubble.hidden, true); // speech waits for the landing
+        landing.step(frameMs);
+    }
+    assert.ok(Math.max(...heights) > 8 && Math.max(...heights) <= 12); // one small final bounce
+    assert.ok(heights.every((height, i) => i === 0 || Math.abs(height - heights[i - 1]) < 2));
+    assert.equal(heights.at(-1), 0);
+    assert.equal(landingShadow.styles.get("--sscale"), "1");
+    assert.equal(landingShadow.styles.get("--sopacity"), "0.8");
+    assert.equal(landingBubble.hidden, false);
+    landing.window.scrollY = 1420;
+    for (let i = 0; i < 10; i++) landing.step(frameMs);
+    assert.ok(parseFloat(landingShadow.styles.get("--sy")) - parseFloat(landingBlob.styles.get("--by")) > 24);
+    landing.window.scrollY = 1600;
+    landing.step(frameMs);
+    assert.equal(landingBubble.hidden, true);
+    assert.equal(landingLight.styles.get("--lopacity"), "0.85"); // movement interrupts the final bounce
+    for (let i = 0; i < 150; i++) landing.step(frameMs);
+    assert.equal(landingShadow.styles.get("--sscale"), "1");
+    assert.equal(landingBubble.hidden, false);
+    assert.equal(landing.intervals.length, 1);
+}
 
 const card = { style: {}, dispatchEvent(event) { this.eventType = event.type; } };
 vm.runInNewContext(fs.readFileSync(`${__dirname}/script.js`, "utf8") + "\nApp.animateHeroCard();", {
