@@ -54,9 +54,7 @@ const App = {
     // FLIP: the full name shrinks/flies from the hero into the corner logo's
     // exact spot while fading out, timed against the logo fading/popping in
     // there — reads as "Kenny Pham" becoming "KP", not two separate fades.
-    // The rest of the site (nav + business card) comes in right behind that
-    // landing — just a short beat for "KP" to register alone, then everything
-    // else follows in quick succession instead of trickling in.
+    // The companion starts the card handoff once the name is near the logo.
     swooshNameToLogo() {
         const name = document.getElementById('name-display');
         const logo = this.elems.logo;
@@ -95,31 +93,41 @@ const App = {
             { transform: `translate(${dx}px, ${dy}px) scale(${scale})`, opacity: 0 },
         ], { duration: 1300, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' });
 
+        setTimeout(revealRest, 650);
+
         // Collapse the layout space only after the fly finishes (name is
         // already invisible by then) — collapsing earlier would clip the
         // still-flying, still-visible text via .name-letters' overflow:hidden.
         fly.finished.then(() => {
             name.classList.add('is-collapsed');
-            setTimeout(revealRest, postKpBeat);
         });
     },
 
-    // Motion (motion.dev) loaded on demand — the animation engine behind Motion
-    // Primitives — just for this one entrance. Falls back to a plain CSS fade
-    // if the CDN is unreachable, so the card never gets stuck invisible.
+    // Share one entrance beat with the companion, then release the card for tilt/flip.
     animateHeroCard() {
         const card = document.getElementById('hero-card');
         if (!card) return;
         const announce = () => card.dispatchEvent(new Event('hero-card-reveal'));
-        const fallback = () => { card.style.transition = 'opacity 0.4s ease'; card.style.opacity = '1'; announce(); };
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return fallback();
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !card.animate) {
+            card.style.opacity = '1';
+            announce();
+            return;
+        }
 
-        import('https://cdn.jsdelivr.net/npm/motion@11/+esm')
-            .then(({ animate }) => {
-                animate(card, { opacity: [0, 1], y: [24, 0], scale: [0.94, 1] }, { type: 'spring', stiffness: 260, damping: 22 });
-                announce();
-            })
-            .catch(fallback);
+        const pull = window.innerWidth >= 1280 && window.scrollY === 0 && document.getElementById('blob-companion');
+        if (pull) card.dispatchEvent(new Event('hero-card-pull'));
+        card.style.opacity = '1';
+        const entrance = card.animate(pull ? [
+            { opacity: 0, transform: 'translateY(-84px) rotate(-4deg) scale(0.97)', offset: 0 },
+            { opacity: 0, transform: 'translateY(-84px) rotate(-4deg) scale(0.97)', offset: 0.22 },
+            { opacity: 1, transform: 'translateY(-68px) rotate(-3deg) scale(0.98)', offset: 0.38, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' },
+            { opacity: 1, transform: 'translateY(8px) rotate(1deg) scale(1)', offset: 0.76 },
+            { opacity: 1, transform: 'translateY(0) rotate(0) scale(1)' },
+        ] : [
+            { opacity: 0, transform: 'translateY(24px) scale(0.94)' },
+            { opacity: 1, transform: 'translateY(0) scale(1)' },
+        ], { duration: pull ? 1000 : 600, easing: pull ? 'linear' : 'cubic-bezier(0.16, 1, 0.3, 1)' });
+        entrance.finished.then(announce, announce);
     },
 
     // Fade-in-and-rise reveal as content scrolls into view. Skips straight to
@@ -276,9 +284,7 @@ const App = {
     },
 
     // Motion Primitives' signature "magnetic" hover: the element nudges a
-    // few px toward the cursor and springs back on leave. Reuses the same
-    // on-demand Motion import as animateHeroCard (module is cached after
-    // the first import, so this is effectively free).
+    // few px toward the cursor and springs back on leave.
     initMagnetic(selector, strength = 10) {
         if (window.matchMedia('(hover: none)').matches ||
             window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;

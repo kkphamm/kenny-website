@@ -151,6 +151,7 @@ let distance = 0;
 let dir = 1;
 let hovering = false;
 let shown = false;
+let pulling = false;
 let lastTime = performance.now();
 let landingProgress = 1;
 let introStarted = false;
@@ -249,6 +250,7 @@ function render(moving = false) {
 }
 
 function rebuild() {
+    if (pulling) return;
     const progress = routeLength ? distance / routeLength : null;
     buildRoute();
     distance = progress === null ? targetDistance() : progress * routeLength;
@@ -338,7 +340,22 @@ if (!footerCopy || sections.some((section, i) => !section || !(i ? section.query
 } else {
     chooseRoute();
     rebuild();
-    document.getElementById("hero-card").addEventListener("hero-card-reveal", () => { rebuild(); setTimeout(showCompanion, 1000); }, { once: true });
+    const card = document.getElementById("hero-card");
+    card.addEventListener("hero-card-pull", () => {
+        if (reduced || window.innerWidth < 1280 || window.scrollY > 0) return;
+        rebuild();
+        pulling = true;
+        [blob, shadow].forEach((element) => {
+            element.hidden = false;
+            element.classList.add("is-pulling");
+        });
+    }, { once: true });
+    card.addEventListener("hero-card-reveal", () => {
+        pulling = false;
+        [blob, shadow].forEach((element) => { element.classList.remove("is-pulling"); });
+        rebuild();
+        showCompanion();
+    }, { once: true });
     window.addEventListener("resize", rebuild);
     if (window.ResizeObserver) {
         const observer = new window.ResizeObserver(rebuild);

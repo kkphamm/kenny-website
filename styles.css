@@ -147,6 +147,7 @@
 .blob-message.is-typing span::after { content: '|'; color: #0066cc; animation: blob-caret 0.7s step-end infinite; }
 @keyframes blob-caret { 50% { opacity: 0; } }
 .blob-visual {
+    position: relative;
     width: 100%;
     height: 100%;
     pointer-events: none;
@@ -163,6 +164,36 @@
 }
 .blob-visual.is-hovered { animation: blob-hover-bounce 0.55s ease-in-out infinite; }
 .blob-visual.is-celebrating { animation: blob-hover-bounce 0.55s ease-in-out; }
+#blob-companion.is-pulling { pointer-events: none; }
+#blob-companion.is-pulling .blob-visual {
+    transform-origin: center bottom;
+    animation: blob-card-pull 1s linear;
+}
+#blob-companion.is-pulling .blob-visual::after {
+    content: '';
+    position: absolute;
+    top: 78%;
+    left: 50%;
+    width: 2px;
+    height: 30px;
+    background: #e4d5c4;
+    border-radius: 2px;
+    transform-origin: top;
+    opacity: 0;
+    animation: blob-card-tether 1s linear;
+}
+@keyframes blob-card-tether {
+    0%, 22%, 100% { opacity: 0; transform: scaleY(0.4); }
+    30%, 70% { opacity: 0.7; transform: scaleY(1); }
+}
+@keyframes blob-card-pull {
+    0% { opacity: 0; transform: translateY(-72px) scale(0.6); }
+    15% { opacity: 1; transform: translateY(-88px) scale(1.06, 0.9) rotate(-7deg); }
+    26% { transform: translateY(-96px) scale(0.84, 1.12) rotate(-9deg); }
+    38% { transform: translateY(-64px) scale(0.84, 1.12) rotate(-5deg); animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
+    76% { transform: translateY(12px) scale(1.08, 0.9) rotate(4deg); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
 @keyframes blob-hover-shadow {
     0%, 100% { transform: translate(-50%, -50%) translate3d(var(--sx, 0px), var(--sy, 0px), 0) scale(var(--sscale, 1)) scale(1); }
     50% { transform: translate(-50%, -50%) translate3d(var(--sx, 0px), var(--sy, 0px), 0) scale(var(--sscale, 1)) scale(0.55); }
@@ -179,12 +210,19 @@
 }
 #blob-shadow.is-hovered { animation: blob-hover-shadow 0.55s ease-in-out infinite; }
 #blob-shadow.is-celebrating { animation: blob-hover-shadow 0.55s ease-in-out; }
+#blob-shadow.is-pulling { animation: blob-pull-shadow 1s ease-out; }
+@keyframes blob-pull-shadow {
+    0%, 38% { opacity: 0; }
+    100% { opacity: var(--sopacity, 0.8); }
+}
 @media (max-width: 1279px) {
     #blob-companion, #blob-shadow, #blob-track, .blob-light { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
     .blob-light { display: none; }
-    .blob-visual.is-hovered, #blob-shadow.is-hovered, .blob-message.is-typing span::after { animation: none; }
+    .blob-visual.is-hovered, #blob-shadow.is-hovered, .blob-message.is-typing span::after,
+    #blob-companion.is-pulling .blob-visual, #blob-companion.is-pulling .blob-visual::after,
+    #blob-shadow.is-pulling { animation: none; }
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -306,7 +344,7 @@ h1, h2, h3 { font-family: var(--font-headline); font-weight: 600 !important; }
 @keyframes fallIn { to { opacity: 1; transform: translateY(0); } }
 
 /* Hero business card — glass-on-photo, tilts toward the cursor (--tx/--ty set
-   by script.js) and flips to a details face. Entrance animated by Motion. */
+   by script.js) and flips to a details face. Entrance uses Web Animations. */
 .hero-card {
     position: relative;
     width: min(640px, 92vw);
@@ -498,6 +536,7 @@ h1, h2, h3 { font-family: var(--font-headline); font-weight: 600 !important; }
     margin-top: auto; padding-top: var(--sp-3);
     border-top: 1px solid rgba(255,255,255,0.12);
 }
+.hero-card-back .hero-card-foot { justify-content: flex-end; }
 /* Front contact row sits below the divider. */
 .hero-card-front .hero-card-foot {
     display: block;
@@ -844,6 +883,8 @@ section {
 .exp-card.is-open .exp-card-disclosure-inner ul { opacity: 1; transform: translateY(0); transition-delay: 0.05s; }
 .exp-card-disclosure-inner li { font-size: clamp(0.88rem, 1.8vw, 0.95rem); line-height: 1.5; color: var(--text-secondary); margin-bottom: 0.3rem; }
 .exp-card-disclosure-inner li:last-child { margin-bottom: 0; }
+.exp-card-disclosure-inner li strong,
+.project-tile-detail li strong { color: var(--text-primary); font-weight: 600; }
 
 @media (prefers-reduced-motion: reduce) {
     .timeline-node.is-current { animation: none; }
@@ -896,6 +937,8 @@ section {
     padding-block: 4px;
 }
 .projects-grid::-webkit-scrollbar { display: none; }
+/* Desktop: tiles 15% smaller (72% x 0.85). */
+@media (min-width: 1280px) { .projects-grid { width: 61.2%; } }
 .project-tile {
     flex: 0 0 100%;
     width: 100%;
@@ -967,6 +1010,11 @@ section {
 .project-tile-detail .tech-stack { font-size: clamp(0.75rem, 1.8vw, 0.85rem); color: var(--text-secondary); font-style: italic; margin-bottom: clamp(0.5rem, 1.5vw, 0.75rem); font-weight: 500; }
 .project-tile-detail p { font-size: clamp(0.85rem, 2vw, 0.95rem); line-height: 1.5; color: var(--text-secondary); }
 .project-tile-detail p:last-of-type { margin-bottom: 0; }
+.project-tile-detail ul { margin: 0.6rem 0 0.75rem; padding-left: 1.1rem; }
+.project-tile-detail ul:last-child { margin-bottom: 0; }
+.project-tile-detail li { font-size: clamp(0.85rem, 2vw, 0.95rem); line-height: 1.5; color: var(--text-secondary); margin-bottom: 0.4rem; }
+.project-tile-detail li:last-child { margin-bottom: 0; }
+.project-tile-detail code { font-size: 0.9em; }
 .project-tile-detail a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
 .project-tile-detail a:hover { color: var(--accent-hover); text-decoration: underline; }
 

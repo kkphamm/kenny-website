@@ -70,6 +70,7 @@ function run(reduced = false) {
     return {
         window, nodes, frames, windowEvents, timeouts, intervals, resizeBody,
         setFooterExtra(value) { footerExtra = value; resizeBody(); },
+        pull() { sections.get("hero-section").querySelector().events.get("hero-card-pull")(); },
         reveal() { sections.get("hero-section").querySelector().events.get("hero-card-reveal")(); },
         runTimeout(delay) { const index = timeouts.findIndex((timer) => timer.delay === delay && timer.active); assert.notEqual(index, -1); const timer = timeouts.splice(index, 1)[0]; timer.active = false; timer.fn(); },
         step(ms = 50) { now += ms; frames.shift()(now); },
@@ -88,9 +89,18 @@ assert.equal(blob.hidden, true);
 assert.equal(bubble.hidden, true);
 assert.equal(endBubble.hidden, true);
 assert.equal(page.frames.length, 0);
+page.pull();
+assert.equal(blob.hidden, false);
+assert.equal(shadow.hidden, false);
+assert.equal(blob.classes.has("is-pulling"), true);
+assert.equal(shadow.classes.has("is-pulling"), true);
+assert.equal(first.hidden, true);
+assert.equal(bubble.hidden, true);
+assert.equal(page.frames.length, 0);
+assert.equal(page.intervals.length, 0);
 page.reveal();
-assert.equal(blob.hidden, true);
-page.runTimeout(1000);
+assert.equal(blob.classes.has("is-pulling"), false);
+assert.equal(shadow.classes.has("is-pulling"), false);
 assert.equal(blob.hidden, false);
 assert.equal(bubble.hidden, false);
 assert.equal(page.frames.length, 1);
@@ -217,8 +227,11 @@ assert.equal(still.frames.length, 0);
 assert.equal(still.nodes[0].style.display, undefined);
 assert.equal(still.nodes[4].style.display, undefined);
 assert.ok(Math.abs(parseFloat(still.nodes[5].styles.get("--by")) - 450) < 0.1);
+still.pull();
+assert.equal(still.nodes[5].hidden, true);
+assert.equal(still.nodes[4].hidden, true);
+assert.equal(still.nodes[5].classes.has("is-pulling"), false);
 still.reveal();
-still.runTimeout(1000);
 assert.equal(still.nodes[5].children[1].children[0].textContent, "Scroll to adventure!");
 assert.equal(still.intervals.length, 0);
 still.window.scrollY = 6300;
@@ -246,7 +259,6 @@ const interrupted = run();
 const [, , , , interruptedShadow, interruptedBlob] = interrupted.nodes;
 const interruptedBubble = interruptedBlob.children[1];
 interrupted.reveal();
-interrupted.runTimeout(1000);
 for (let i = 0; i < 200 && interrupted.intervals[0].active; i++) interrupted.intervals[0].fn();
 assert.equal(interruptedBubble.hidden, false);
 interrupted.window.scrollY = 1400;
@@ -272,19 +284,42 @@ assert.equal(interruptedBubble.hidden, true); // a finished introduction does no
 assert.equal(interrupted.intervals.filter((timer) => timer.active).length, 0);
 
 const earlyScroll = run();
-earlyScroll.reveal();
 earlyScroll.window.scrollY = 1400;
-earlyScroll.runTimeout(1000);
+earlyScroll.pull();
+assert.equal(earlyScroll.nodes[5].hidden, true);
+earlyScroll.reveal();
 assert.equal(earlyScroll.nodes[5].children[1].hidden, true);
 assert.equal(earlyScroll.intervals.length, 0);
 for (let i = 0; i < 150; i++) earlyScroll.step();
 assert.equal(earlyScroll.nodes[5].children[1].hidden, false);
 
+const pullingLayout = run();
+const pullingTrack = pullingLayout.nodes[0];
+const initialPullPath = pullingTrack.children[0].d;
+pullingLayout.pull();
+pullingLayout.window.innerWidth = 1600;
+pullingLayout.windowEvents.get("resize")();
+pullingLayout.resizeBody();
+assert.equal(pullingTrack.viewBox, "0 0 1440 7200");
+assert.equal(pullingTrack.children[0].d, initialPullPath);
+pullingLayout.reveal();
+assert.equal(pullingTrack.viewBox, "0 0 1600 7200");
+assert.notEqual(pullingTrack.children[0].d, initialPullPath);
+assert.equal(pullingLayout.frames.length, 1);
+
+const narrow = run();
+narrow.window.innerWidth = 1279;
+narrow.pull();
+assert.equal(narrow.nodes[5].hidden, true);
+assert.equal(narrow.nodes[5].classes.has("is-pulling"), false);
+narrow.reveal();
+assert.equal(narrow.nodes[5].hidden, false);
+assert.equal(narrow.frames.length, 1);
+
 const approach = run();
 const approachLights = approach.nodes.slice(1, 4);
 const approachBlob = approach.nodes[5];
 approach.reveal();
-approach.runTimeout(1000);
 for (const scrollY of [1400, 700, 6300, 0]) {
     approach.window.scrollY = scrollY;
     const counts = [];
@@ -326,7 +361,6 @@ for (const frameMs of [1000 / 60, 1000 / 120]) {
     const [, landingLight, , , landingShadow, landingBlob] = landing.nodes;
     const landingBubble = landingBlob.children[1];
     landing.reveal();
-    landing.runTimeout(1000);
     landing.window.scrollY = 1400;
     let arrived = false;
     for (let i = 0; i < 600; i++) {
@@ -367,10 +401,45 @@ for (const frameMs of [1000 / 60, 1000 / 120]) {
     assert.equal(landing.intervals.length, 1);
 }
 
-const card = { style: {}, dispatchEvent(event) { this.eventType = event.type; } };
-vm.runInNewContext(fs.readFileSync(`${__dirname}/script.js`, "utf8") + "\nApp.animateHeroCard();", {
-    document: { getElementById: (id) => id === "hero-card" ? card : null, querySelector: () => null, addEventListener() {} },
-    window: { matchMedia: () => ({ matches: true }) },
-    Event,
-});
-assert.equal(card.eventType, "hero-card-reveal");
+function entrance({ reduced = false, width = 1440, scrollY = 0, companion = true, supported = true } = {}) {
+    const events = [];
+    const animations = [];
+    let finish;
+    let cancel;
+    const card = {
+        style: {},
+        dispatchEvent(event) { events.push(event.type); },
+        animate: supported ? (keyframes, options) => {
+            animations.push({ keyframes, options });
+            return { finished: { then(done, interrupted) { finish = done; cancel = interrupted; } } };
+        } : undefined,
+    };
+    vm.runInNewContext(fs.readFileSync(`${__dirname}/script.js`, "utf8") + "\nApp.animateHeroCard();", {
+        document: { getElementById: (id) => id === "hero-card" ? card : id === "blob-companion" && companion ? {} : null, querySelector: () => null, addEventListener() {} },
+        window: { matchMedia: () => ({ matches: reduced }), innerWidth: width, scrollY },
+        Event,
+    });
+    return { card, events, animations, finish: () => finish(), cancel: () => cancel() };
+}
+
+for (const complete of ["finish", "cancel"]) {
+    const desktop = entrance();
+    assert.deepEqual(desktop.events, ["hero-card-pull"]);
+    assert.equal(desktop.animations.length, 1);
+    desktop[complete]();
+    assert.deepEqual(desktop.events, ["hero-card-pull", "hero-card-reveal"]);
+    assert.equal(desktop.card.style.opacity, "1");
+}
+for (const options of [{ width: 1279 }, { scrollY: 100 }, { companion: false }]) {
+    const plain = entrance(options);
+    assert.deepEqual(plain.events, []);
+    assert.equal(plain.animations.length, 1);
+    plain.finish();
+    assert.deepEqual(plain.events, ["hero-card-reveal"]);
+}
+for (const options of [{ reduced: true }, { supported: false }]) {
+    const instant = entrance(options);
+    assert.equal(instant.card.style.opacity, "1");
+    assert.equal(instant.animations.length, 0);
+    assert.deepEqual(instant.events, ["hero-card-reveal"]);
+}
